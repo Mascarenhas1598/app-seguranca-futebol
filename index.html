@@ -51,15 +51,13 @@
       <input type="text" id="equipesEnvolvidas" class="w-full p-2 border rounded">
     </div>
     <div>
-      <div>
-      <label class="block font-semibold">Local de Interesse</label>
+  <label class="block font-semibold">Local de Interesse</label>
       <input type="text" class="w-full p-2 border rounded">
     </div>
     <div>
       <label class="block font-semibold">Capacidade Habilitada do Local</label>
-      <input type="number" class="w-full p-2 border rounded">
-    </div>
-    </div>
+  <input type="number" class="w-full p-2 border rounded">
+</div>
   </div>
 </section>
 
@@ -74,7 +72,11 @@
     </ul>
   </div>
   <h2 class="text-xl font-bold mb-4">Análise de Risco</h2>
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+  <div>
+    <label class="block font-semibold">Expectativa de Público</label>
+    <input type="number" id="fatorPublico" class="w-full p-2 border rounded" placeholder="Ex: 10000">
+  </div>
     <div>
       <label class="block font-semibold">Nível de Treinamento da Equipe de Segurança</label>
       <input type="number" id="treinamentoSeguranca" class="w-full p-2 border rounded" placeholder="0 a 1">
@@ -287,7 +289,13 @@ let riscoContextual = (
 ) / 2;
 
 let riscoFinal = (0.3 * riscoEstrutural) + (0.3 * riscoOperacional) + (0.3 * riscoComportamental) + (0.1 * riscoContextual);
-const prob = 1 / (1 + Math.exp(-riscoFinal));
+
+  let total = riscoEstrutural + riscoOperacional + riscoComportamental + riscoContextual;
+  let impactoEstrutural = ((riscoEstrutural / total) * 100).toFixed(1);
+  let impactoOperacional = ((riscoOperacional / total) * 100).toFixed(1);
+  let impactoComportamental = ((riscoComportamental / total) * 100).toFixed(1);
+  let impactoContextual = ((riscoContextual / total) * 100).toFixed(1);
+const prob = 1 / (1 + Math.exp(-2 * (riscoFinal - 0.5)));
   let resultado = "Baixo";
   let cor = "#4CAF50";
   if (prob >= 0.7) {
@@ -304,6 +312,8 @@ const prob = 1 / (1 + Math.exp(-riscoFinal));
   el.style.backgroundColor = cor;
   el.style.padding = "10px";
   el.style.borderRadius = "6px";
+
+  el.innerHTML += `<br><small style='display:block; margin-top:10px;'>Impacto por categoria:<br>🔵 Estrutural: ${impactoEstrutural}%<br>🟢 Operacional: ${impactoOperacional}%<br>🟠 Comportamental: ${impactoComportamental}%<br>🔴 Contextual: ${impactoContextual}%</small>`;
 }
 </script>
 <script>
