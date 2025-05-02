@@ -151,9 +151,11 @@
       </div>
       <button onclick="preverRiscoIA()" class="mt-6 bg-green-600 text-white py-2 px-4 rounded hover:bg-green-700">Prever Risco com IA</button>
       <p id="resultadoIA" class="mt-4 font-bold"></p>
-    </section>
-
-    <!-- Relatório Fotográfico -->
+    <section class="bg-white p-6 rounded shadow">
+  <h2 class="text-xl font-bold mb-4">Impacto Visual do Risco</h2>
+  <canvas id="graficoImpacto" height="120"></canvas>
+</section>
+$1
     <section class="bg-white p-6 rounded shadow">
   <h2 class="text-xl font-bold mb-4">Relatório Fotográfico</h2>
   <div class="mb-4 p-4 bg-green-50 border-l-4 border-green-400 text-sm text-green-700">
@@ -314,9 +316,31 @@ const prob = 1 / (1 + Math.exp(-2 * (riscoFinal - 0.5)));
   el.style.borderRadius = "6px";
 
   el.innerHTML += `<br><small style='display:block; margin-top:10px;'>Impacto por categoria:<br>🔵 Estrutural: ${impactoEstrutural}%<br>🟢 Operacional: ${impactoOperacional}%<br>🟠 Comportamental: ${impactoComportamental}%<br>🔴 Contextual: ${impactoContextual}%</small>`;
+desenharGraficoImpacto(el, impactoEstrutural, impactoOperacional, impactoComportamental, impactoContextual);
+}
+
+<script>
+function desenharGraficoImpacto(e, estrutural, operacional, comportamental, contextual) {
+  const ctx = document.getElementById('graficoImpacto')?.getContext('2d');
+  if (!ctx) return;
+  new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: ['Estrutural', 'Operacional', 'Comportamental', 'Contextual'],
+      datasets: [{
+        label: 'Impacto (%)',
+        data: [estrutural, operacional, comportamental, contextual],
+        backgroundColor: ['#3B82F6', '#10B981', '#F59E0B', '#EF4444']
+      }]
+    },
+    options: {
+      responsive: true,
+      scales: { y: { beginAtZero: true, max: 100 } }
+    }
+  });
 }
 </script>
-<script>
+$1
 const inputFotos = document.querySelector('input[type="file"]');
 const previewContainer = document.getElementById("previewFotos");
 inputFotos.addEventListener('change', function () {
@@ -336,3 +360,4 @@ inputFotos.addEventListener('change', function () {
 </script>
 </body>
 </html>
+
