@@ -314,9 +314,23 @@ const prob = 1 / (1 + Math.exp(-2 * (riscoFinal - 0.5)));
   el.style.backgroundColor = cor;
   el.style.padding = "10px";
   el.style.borderRadius = "6px";
-
   el.innerHTML += `<br><small style='display:block; margin-top:10px;'>Impacto por categoria:<br>🔵 Estrutural: ${impactoEstrutural}%<br>🟢 Operacional: ${impactoOperacional}%<br>🟠 Comportamental: ${impactoComportamental}%<br>🔴 Contextual: ${impactoContextual}%</small>`;
-desenharGraficoImpacto(el, impactoEstrutural, impactoOperacional, impactoComportamental, impactoContextual);
+  
+  // Sugestões automáticas de mitigação
+  let sugestoes = [];
+  if (prob >= 0.7) {
+    sugestoes.push("✅ Reforçar efetivo policial e segurança privada");
+    sugestoes.push("✅ Implementar plano de evacuação de emergência reforçado");
+    sugestoes.push("✅ Intensificar revista pessoal e controle de acesso");
+  } else if (prob >= 0.4) {
+    sugestoes.push("🔍 Revisar os pontos de controle e checkpoints");
+    sugestoes.push("🔍 Aumentar o monitoramento de grupos organizados");
+  } else {
+    sugestoes.push("✔️ Manter planejamento padrão com monitoramento preventivo");
+  }
+  el.innerHTML += `<br><br><strong>Ações Mitigadoras Sugeridas:</strong><ul class='list-disc list-inside text-sm mt-2'>` + sugestoes.map(s => `<li>${s}</li>`).join('') + `</ul>`;
+
+  desenharGraficoImpacto(el, impactoEstrutural, impactoOperacional, impactoComportamental, impactoContextual);
 }
 
 <script>
