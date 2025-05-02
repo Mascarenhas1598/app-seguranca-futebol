@@ -119,8 +119,8 @@
       
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label class="block font-semibold">Efetivo Empregado</label>
-          <input type="number" id="fatorEfetivo" class="w-full p-2 border rounded">
+          <label class="block font-semibold">Efetivo Empregado (1 segurança a cada 100 pessoas)</label>
+<input type="number" id="fatorEfetivo" class="w-full p-2 border rounded" placeholder="Ex: 50">
         </div>
         <div>
           <label class="block font-semibold">Número de Ocorrências</label>
@@ -167,7 +167,8 @@
       <option value="Fechamento">Fechamento</option>
     </select>
         <label class="block font-semibold">Upload de Fotos (até 5 por fase)</label>
-        <input type="file" multiple class="w-full p-2 border rounded">
+        <input type="file" accept="image/*" multiple class="w-full p-2 border rounded">
+<div id="previewFotos" class="grid grid-cols-2 md:grid-cols-3 gap-4 mt-4"></div>
         <label class="block font-semibold">Descrição da Foto</label>
         <input type="text" maxlength="200" class="w-full p-2 border rounded">
       </div>
@@ -251,51 +252,42 @@ function preverRiscoIA() {
     rivalExtra: 0.5
   };
 
-  let z = 0;
-  z += pesos.publico * (publico >= 50000 ? 1 : publico >= 20000 ? 0.5 : 0);
-  z += pesos.efetivo * (efetivo < publico / 120 ? 1 : 0);
-  z += pesos.ocorrencias * (ocorrencias > 3 ? 1 : ocorrencias > 1 ? 0.5 : 0);
-  z += pesos.clima * clima;
-  z += pesos.rivalidade * rivalidade;
-  z += pesos.visitante * visitante;
-  z += pesos.infra * infra;
-  z += pesos.evacuacao * evacuacao;
-  z += pesos.tempoResposta * tempoResposta;
-  z += pesos.capacidadeTransporte * capacidadeTransporte;
-  z += pesos.coberturaCameras * coberturaCameras;
-  z += pesos.planoContingencia * planoContingencia;
+  let riscoEstrutural = (
+    parseFloat(document.getElementById('infraestrutura')?.value || 0) +
+    parseFloat(document.getElementById('condicaoVias')?.value || 0) +
+    parseFloat(document.getElementById('iluminacaoPublica')?.value || 0) +
+    parseFloat(document.getElementById('distanciaApoioPolicial')?.value || 0)
+) / 4;
 
-  const treinamentoSeguranca = parseFloat(document.getElementById('treinamentoSeguranca')?.value || 0);
-  const tempoInspecao = parseFloat(document.getElementById('tempoInspecao')?.value || 0);
-  const eficienciaCheckpoints = parseFloat(document.getElementById('eficienciaCheckpoints')?.value || 0);
-  const condicaoVias = parseFloat(document.getElementById('condicaoVias')?.value || 0);
-  const iluminacaoPublica = parseFloat(document.getElementById('iluminacaoPublica')?.value || 0);
-  const distanciaApoioPolicial = parseFloat(document.getElementById('distanciaApoioPolicial')?.value || 0);
-  const diaSemana = parseFloat(document.getElementById('diaSemana')?.value || 0);
-  const historicoEmocional = parseFloat(document.getElementById('historicoEmocional')?.value || 0);
-  const monitoramentoGrupos = parseFloat(document.getElementById('monitoramentoGrupos')?.value || 0);
-  const mandadosPendentes = parseFloat(document.getElementById('mandadosPendentes')?.value || 0);
+let publicoEstimado = parseFloat(document.getElementById('fatorPublico')?.value || 0);
+let efetivoEmpregado = parseFloat(document.getElementById('fatorEfetivo')?.value || 0);
+let razaoEfetivo = (publicoEstimado > 0) ? efetivoEmpregado / (publicoEstimado / 100) : 1;
+let riscoEfetivo = 1 - Math.min(razaoEfetivo, 1);
 
-  z += 0.2 * treinamentoSeguranca;
-  z += 0.15 * tempoInspecao;
-  z += 0.15 * eficienciaCheckpoints;
-  z += 0.15 * condicaoVias;
-  z += 0.15 * iluminacaoPublica;
-  z += 0.15 * distanciaApoioPolicial;
-  z += 0.1 * diaSemana;
-  z += 0.2 * historicoEmocional;
-  z += 0.2 * monitoramentoGrupos;
-  z += 0.2 * mandadosPendentes;
+let riscoOperacional = (
+  riscoEfetivo +
+    parseFloat(document.getElementById('evacuacao')?.value || 0) +
+    parseFloat(document.getElementById('tempoInspecao')?.value || 0) +
+    parseFloat(document.getElementById('eficienciaCheckpoints')?.value || 0) +
+    parseFloat(document.getElementById('clima')?.value || 0)
+) / 5;
 
-  if ((equipes.includes("boca") && equipes.includes("river")) ||
-      (equipes.includes("independiente") && equipes.includes("racing"))) {
-    z += pesos.rivalExtra;
-  }
-  if (equipes.includes("corinthians") && equipes.includes("palmeiras")) {
-    z += pesos.rivalExtra * 0.5;
-  }
+let riscoComportamental = (
+    parseFloat(document.getElementById('rivalidade')?.value || 0) +
+    parseFloat(document.getElementById('visitante')?.value || 0) +
+    parseFloat(document.getElementById('monitoramentoGrupos')?.value || 0) +
+    parseFloat(document.getElementById('historicoEmocional')?.value || 0) +
+    parseFloat(document.getElementById('mandadosPendentes')?.value || 0) +
+    parseFloat(document.getElementById('fatorOcorrencias')?.value || 0)
+) / 6;
 
-  const prob = 1 / (1 + Math.exp(-z));
+let riscoContextual = (
+    parseFloat(document.getElementById('diaSemana')?.value || 0) +
+    parseFloat(document.getElementById('tempoResposta')?.value || 0)
+) / 2;
+
+let riscoFinal = (0.3 * riscoEstrutural) + (0.3 * riscoOperacional) + (0.3 * riscoComportamental) + (0.1 * riscoContextual);
+const prob = 1 / (1 + Math.exp(-riscoFinal));
   let resultado = "Baixo";
   let cor = "#4CAF50";
   if (prob >= 0.7) {
@@ -313,6 +305,24 @@ function preverRiscoIA() {
   el.style.padding = "10px";
   el.style.borderRadius = "6px";
 }
+</script>
+<script>
+const inputFotos = document.querySelector('input[type="file"]');
+const previewContainer = document.getElementById("previewFotos");
+inputFotos.addEventListener('change', function () {
+  previewContainer.innerHTML = '';
+  [...this.files].forEach(file => {
+    const reader = new FileReader();
+    reader.onload = function (e) {
+      const img = document.createElement('img');
+      img.src = e.target.result;
+      img.alt = file.name;
+      img.className = 'w-full h-32 object-cover border rounded shadow';
+      previewContainer.appendChild(img);
+    };
+    reader.readAsDataURL(file);
+  });
+});
 </script>
 </body>
 </html>
