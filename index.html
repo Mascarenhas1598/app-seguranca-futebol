@@ -333,7 +333,6 @@ const prob = 1 / (1 + Math.exp(-2 * (riscoFinal - 0.5)));
   desenharGraficoImpacto(el, impactoEstrutural, impactoOperacional, impactoComportamental, impactoContextual);
 }
 
-<script>
 function desenharGraficoImpacto(e, estrutural, operacional, comportamental, contextual) {
   const ctx = document.getElementById('graficoImpacto')?.getContext('2d');
   if (!ctx) return;
@@ -353,7 +352,6 @@ function desenharGraficoImpacto(e, estrutural, operacional, comportamental, cont
     }
   });
 }
-</script>
 $1
 const inputFotos = document.querySelector('input[type="file"]');
 const previewContainer = document.getElementById("previewFotos");
@@ -374,4 +372,5 @@ inputFotos.addEventListener('change', function () {
 </script>
 </body>
 </html>
+
 
