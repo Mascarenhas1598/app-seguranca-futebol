@@ -54,12 +54,29 @@
 
 <script>
   const limiteFotosPorFase = 5;
+  const fotosPorFase = {
+    Montagem: [],
+    Entrada: [],
+    Jogo: [],
+    Evacuação: [],
+    Fechamento: []
+  };
+
   function atualizarFotos(input, fase) {
     const previewId = `preview${fase}`;
     const previewContainer = document.getElementById(previewId);
+
+    const novosArquivos = Array.from(input.files);
+    const arquivosAtuais = fotosPorFase[fase];
+
+    // Adiciona novos arquivos sem ultrapassar o limite de 5
+    for (let i = 0; i < novosArquivos.length && arquivosAtuais.length < limiteFotosPorFase; i++) {
+      arquivosAtuais.push(novosArquivos[i]);
+    }
+
+    // Atualiza o visual do preview
     previewContainer.innerHTML = '';
-    const arquivos = Array.from(input.files).slice(0, limiteFotosPorFase);
-    arquivos.forEach(file => {
+    arquivosAtuais.forEach(file => {
       const reader = new FileReader();
       reader.onload = function (e) {
         const img = document.createElement('img');
