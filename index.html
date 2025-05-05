@@ -212,8 +212,18 @@
   </div>
 <script>
 document.getElementById("entrar").addEventListener("click", function () {
-  document.getElementById("login").style.display = "none";
-  document.getElementById("app").classList.remove("hidden");
+  const usuario = document.getElementById("usuario").value;
+  const senha = document.getElementById("senha").value;
+
+  const usuarioCorreto = "NMadmin";
+  const senhaCorreta = "159800";
+
+  if (usuario === usuarioCorreto && senha === senhaCorreta) {
+    document.getElementById("login").style.display = "none";
+    document.getElementById("app").classList.remove("hidden");
+  } else {
+    alert("Usuário ou senha incorretos. Tente novamente.");
+  }
 });
 function preverRiscoIA() {
   const publico = parseFloat(document.getElementById('fatorPublico')?.value || 0);
