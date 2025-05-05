@@ -83,7 +83,7 @@
     </div>
     <div>
       <label class="block font-semibold">Rivalidade entre as torcidas</label>
-      <input type="number" id="tempoInspecao" class="w-full p-2 border rounded" placeholder="0 a 1">
+      <input type="number" id="Rivalidadetorcidas" class="w-full p-2 border rounded" placeholder="0 a 1">
     </div>
     <div>
       <label class="block font-semibold">Eficiência dos Checkpoints</label>
@@ -95,11 +95,11 @@
     </div>
     <div>
       <label class="block font-semibold">Fase da competicao</label>
-      <input type="number" id="iluminacaoPublica" class="w-full p-2 border rounded" placeholder="0 a 1">
+      <input type="number" id="Fasecompeticao" class="w-full p-2 border rounded" placeholder="0 a 1">
     </div>
     <div>
-      <label class="block font-semibold">Historico de itens proibidos torcida visitante</label>
-      <input type="number" id="distanciaApoioPolicial" class="w-full p-2 border rounded" placeholder="0 a 1">
+      <label class="block font-semibold">Historico de itens proibidos torcida visitante conflitiva</label>
+      <input type="number" id="itensproibidostorcida" class="w-full p-2 border rounded" placeholder="0 a 1">
     </div>
     <div>
       <label class="block font-semibold">Dia da Semana (0=Semana, 1=Domingo ou feriado)</label>
@@ -110,12 +110,12 @@
       <input type="number" id="historicoEmocional" class="w-full p-2 border rounded" placeholder="0 a 1">
     </div>
     <div>
-      <label class="block font-semibold">Monitoramento de Grupos Organizados</label>
-      <input type="number" id="monitoramentoGrupos" class="w-full p-2 border rounded" placeholder="0 a 1">
+      <label class="block font-semibold">Proximidade entre as torcidas</label>
+      <input type="number" id="Proximidadetorcidas" class="w-full p-2 border rounded" placeholder="0 a 1">
     </div>
     <div>
-      <label class="block font-semibold">Mandados de Prisão Pendentes</label>
-      <input type="number" id="mandadosPendentes" class="w-full p-2 border rounded" placeholder="0 a 1">
+      <label class="block font-semibold">Ativacoes Clube Mandante</label>
+      <input type="number" id="Ativacoes" class="w-full p-2 border rounded" placeholder="0 a 1">
     </div>
   </div>
       
@@ -137,7 +137,7 @@
           <input type="number" id="rivalidade" class="w-full p-2 border rounded" placeholder="0 a 1">
         </div>
         <div>
-          <label class="block font-semibold">Torcida Visitante</label>
+          <label class="block font-semibold">Torcida Visitante conflitiva</label>
           <input type="number" id="visitante" class="w-full p-2 border rounded" placeholder="0 a 1">
         </div>
         <div>
@@ -145,8 +145,8 @@
           <input type="number" id="conflitos" class="w-full p-2 border rounded" placeholder="0 a 1">
         </div>
         <div>
-          <label class="block font-semibold">tempo de resposta policia</label>
-          <input type="number" id="resposta" class="w-full p-2 border rounded" placeholder="0 a 1">
+          <label class="block font-semibold">tempo de resposta policial</label>
+          <input type="number" id="respostapolicial" class="w-full p-2 border rounded" placeholder="0 a 1">
         </div>
       </div>
       <button onclick="preverRiscoIA()" class="mt-6 bg-green-600 text-white py-2 px-4 rounded hover:bg-green-700">Prever Risco com IA</button>
