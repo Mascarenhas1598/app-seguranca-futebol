@@ -8,7 +8,8 @@
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-100 text-gray-800 font-sans">
-
+  
+  <!-- Tela de Login -->
   <div id="login" class="max-w-md mx-auto mt-20 bg-white p-8 rounded-xl shadow-md">
     <img id="logoEmpresa" src="./logo_nm_engenharia.jpg" alt="Logo NM Engenharia" class="mx-auto mb-6 w-40">
     <h2 class="text-2xl font-bold text-center mb-4">Acesso Restrito</h2>
@@ -18,6 +19,10 @@
     <input type="password" id="senha" class="w-full p-2 border border-gray-300 rounded mb-6">
     <button id="entrar" class="bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 w-full">Entrar</button>
   </div>
+  
+  <!-- Tela Principal do App -->
+  <div id="app" class="hidden max-w-6xl mx-auto p-6 space-y-10">
+    <img src="./logo_nm_engenharia.jpg" alt="Logo NM Engenharia" class="mx-auto mb-6 w-40">
 
   <div id="app" class="hidden max-w-6xl mx-auto p-6 space-y-10">
         
@@ -35,32 +40,45 @@
       </ul>
     </section>
 
+    <!-- Ajuda Geral -->
+    <section class="bg-yellow-100 border-l-4 border-yellow-500 p-4 rounded">
+      <h2 class="text-lg font-bold mb-2 text-yellow-800">Ajuda Geral</h2>
+      <ul class="list-disc list-inside text-sm text-yellow-700">
+        <li>Preencha os campos obrigatórios de forma clara e objetiva.</li>
+        <li>Utilize os valores entre 0 e 1 nas análises conforme a legenda apresentada.</li>
+        <li>Faça o upload de fotos com descrição detalhada em cada fase do evento.</li>
+        <li>Registre apenas ocorrências reais, com dados verificados.</li>
+        <li>Use a previsão de risco com IA como suporte à tomada de decisão.</li>
+        <li>Ao final, utilize a função de exportar para gerar seu relatório em PDF.</li>
+      </ul>
+    </section>
+
     <!-- Cadastro de Partida -->
-<section class="bg-white p-6 rounded shadow">
-  <h2 class="text-xl font-bold mb-4">Cadastro da Partida</h2>
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-    <div>
-      <label class="block font-semibold">Data</label>
-      <input type="date" class="w-full p-2 border rounded">
-    </div>
-    <div>
-      <label class="block font-semibold">Horário</label>
-      <input type="time" class="w-full p-2 border rounded">
-    </div>
-    <div class="md:col-span-2">
-      <label class="block font-semibold">Equipes Envolvidas</label>
-      <input type="text" id="equipesEnvolvidas" class="w-full p-2 border rounded">
-    </div>
-    <div>
-  <label class="block font-semibold">Local de Interesse</label>
-      <input type="text" class="w-full p-2 border rounded">
-    </div>
-    <div>
-      <label class="block font-semibold">Capacidade Habilitada do Local</label>
-  <input type="number" class="w-full p-2 border rounded">
-</div>
-  </div>
-</section>
+    <section class="bg-white p-6 rounded shadow">
+      <h2 class="text-xl font-bold mb-4">Cadastro da Partida</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label class="block font-semibold">Data</label>
+          <input type="date" class="w-full p-2 border rounded">
+        </div>
+        <div>
+          <label class="block font-semibold">Horário</label>
+          <input type="time" class="w-full p-2 border rounded">
+        </div>
+        <div class="md:col-span-2">
+          <label class="block font-semibold">Equipes Envolvidas</label>
+          <input type="text" id="equipesEnvolvidas" class="w-full p-2 border rounded">
+        </div>
+        <div>
+          <label class="block font-semibold">Local de Interesse</label>
+          <input type="text" class="w-full p-2 border rounded">
+        </div>
+        <div>
+          <label class="block font-semibold">Capacidade Habilitada do Local</label>
+          <input type="number" class="w-full p-2 border rounded">
+        </div>
+      </div>
+    </section>
 
 <!-- Análise de Risco -->
 <section class="bg-white p-6 rounded shadow">
@@ -275,7 +293,7 @@
       const senha = document.getElementById("senha").value.trim();
 
       // Simulação de autenticação
-      if (usuario === "Adminnm" && senha === "12345") {
+      if (usuario === "Admin" && senha === "12345#") {
         document.getElementById("login").style.display = "none"; // Oculta a tela de login
         document.getElementById("app").style.display = "block"; // Exibe a tela principal
       } else {
