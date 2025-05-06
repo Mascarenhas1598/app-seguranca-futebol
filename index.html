@@ -260,13 +260,31 @@
       <h2 class="text-xl font-bold mb-4">Exportar Relatório</h2>
       <button onclick="window.print()" class="bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700">Exportar para PDF</button>
    </section>
-
   </div>
+  
 <script>
-document.getElementById("entrar").addEventListener("click", function () {
-  document.getElementById("login").style.display = "none";
-  document.getElementById("app").classList.remove("hidden");
-});
+    // Garantir que apenas a tela de login seja exibida inicialmente
+    document.addEventListener("DOMContentLoaded", function () {
+      document.getElementById("login").style.display = "block"; // Exibe a tela de login
+      document.getElementById("app").style.display = "none";   // Oculta o restante
+    });
+
+    // Evento para autenticação e transição de telas
+    document.getElementById("entrar").addEventListener("click", function () {
+      const usuario = document.getElementById("usuario").value.trim();
+      const senha = document.getElementById("senha").value.trim();
+
+      // Simulação de autenticação
+      if (usuario === "Adminnm" && senha === "12345") {
+        document.getElementById("login").style.display = "none"; // Oculta a tela de login
+        document.getElementById("app").style.display = "block"; // Exibe a tela principal
+      } else {
+        alert("Usuário ou senha inválidos! Tente novamente.");
+      }
+    });
+  </script>
+</body>
+</html>
 function preverRiscoIA() {
   const publico = parseFloat(document.getElementById('fatorPublico')?.value || 0);
   const efetivo = parseFloat(document.getElementById('fatorEfetivo')?.value || 0);
