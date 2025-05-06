@@ -36,8 +36,8 @@
         <li>Ao final, utilize a função de exportar para gerar seu relatório em PDF.</li>
       </ul>
     </section>
-
-    <!-- Relatório Fotográfico -->
+    
+   <!-- Relatório Fotográfico -->
     <section class="bg-white p-6 rounded shadow">
       <h2 class="text-xl font-bold mb-4">Relatório Fotográfico</h2>
       <div class="mb-4 p-4 bg-green-50 border-l-4 border-green-400 text-sm text-green-700">
@@ -81,6 +81,64 @@
     Jogo: [],
     Evacuação: [],
     Fechamento: []
+  };
+
+  function atualizarFotos(input, fase) {
+    const previewId = `preview${fase}`;
+    const previewContainer = document.getElementById(previewId);
+    const novosArquivos = Array.from(input.files);
+    const arquivosAtuais = fotosPorFase[fase];
+
+    for (let i = 0; i < novosArquivos.length && arquivosAtuais.length < limiteFotosPorFase; i++) {
+      arquivosAtuais.push(novosArquivos[i]);
+    }
+
+    previewContainer.innerHTML = '';
+    arquivosAtuais.forEach(file => {
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        const img = document.createElement('img');
+        img.src = e.target.result;
+        img.alt = file.name;
+        img.className = 'w-full h-32 object-cover border rounded shadow';
+        previewContainer.appendChild(img);
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+</script>
+
+</body>
+</html>
+  };
+
+  function atualizarFotos(input, fase) {
+    const previewId = `preview${fase}`;
+    const previewContainer = document.getElementById(previewId);
+    const novosArquivos = Array.from(input.files);
+    const arquivosAtuais = fotosPorFase[fase];
+
+    for (let i = 0; i < novosArquivos.length && arquivosAtuais.length < limiteFotosPorFase; i++) {
+      arquivosAtuais.push(novosArquivos[i]);
+    }
+
+    previewContainer.innerHTML = '';
+    arquivosAtuais.forEach(file => {
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        const img = document.createElement('img');
+        img.src = e.target.result;
+        img.alt = file.name;
+        img.className = 'w-full h-32 object-cover border rounded shadow';
+        previewContainer.appendChild(img);
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+</script>
+
+</body>
+</html>
   };
 
   function atualizarFotos(input, fase) {
