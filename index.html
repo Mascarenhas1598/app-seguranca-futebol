@@ -178,32 +178,79 @@
       </div>
     </section>
 
-    <!-- Registro de Ocorrências -->
+    <!-- Relatório Fotográfico -->
     <section class="bg-white p-6 rounded shadow">
-      <h2 class="text-xl font-bold mb-4">Registro de Ocorrências</h2>
-      <div class="mb-4 p-4 bg-yellow-50 border-l-4 border-yellow-400 text-sm text-yellow-700">
-        <p><strong>Orientação:</strong> descreva apenas ocorrências reais, com o máximo de detalhes possíveis (local, horário, tipo e consequências).</p>
+      <h2 class="text-xl font-bold mb-4">Relatório Fotográfico</h2>
+      <div class="mb-4 p-4 bg-green-50 border-l-4 border-green-400 text-sm text-green-700">
+        <p><strong>Instruções:</strong> Envie até 5 fotos por fase do evento. Cada imagem deve ter uma descrição clara do que está sendo registrado.</p>
       </div>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <label class="block font-semibold">Tipo de Ocorrência</label>
-          <input type="text" class="w-full p-2 border rounded">
+      <div id="fasesContainer" class="space-y-8">
+        <div class="fase-fotografica" data-fase="Montagem">
+          <h3 class="text-lg font-semibold mb-2">Montagem</h3>
+          <input type="file" accept="image/*" multiple onchange="atualizarFotos(this, 'Montagem')" class="w-full p-2 border rounded">
+          <div id="previewMontagem" class="grid grid-cols-2 md:grid-cols-3 gap-4 mt-2"></div>
         </div>
-        <div>
-          <label class="block font-semibold">Local</label>
-          <input type="text" class="w-full p-2 border rounded">
+        <div class="fase-fotografica" data-fase="Entrada">
+          <h3 class="text-lg font-semibold mb-2">Entrada</h3>
+          <input type="file" accept="image/*" multiple onchange="atualizarFotos(this, 'Entrada')" class="w-full p-2 border rounded">
+          <div id="previewEntrada" class="grid grid-cols-2 md:grid-cols-3 gap-4 mt-2"></div>
         </div>
-        <div>
-          <label class="block font-semibold">Horário</label>
-          <input type="time" class="w-full p-2 border rounded">
+        <div class="fase-fotografica" data-fase="Jogo">
+          <h3 class="text-lg font-semibold mb-2">Jogo</h3>
+          <input type="file" accept="image/*" multiple onchange="atualizarFotos(this, 'Jogo')" class="w-full p-2 border rounded">
+          <div id="previewJogo" class="grid grid-cols-2 md:grid-cols-3 gap-4 mt-2"></div>
         </div>
-        <div class="md:col-span-2">
-          <label class="block font-semibold">Descrição</label>
-          <textarea class="w-full p-2 border rounded"></textarea>
+        <div class="fase-fotografica" data-fase="Evacuação">
+          <h3 class="text-lg font-semibold mb-2">Evacuação</h3>
+          <input type="file" accept="image/*" multiple onchange="atualizarFotos(this, 'Evacuação')" class="w-full p-2 border rounded">
+          <div id="previewEvacuação" class="grid grid-cols-2 md:grid-cols-3 gap-4 mt-2"></div>
+        </div>
+        <div class="fase-fotografica" data-fase="Fechamento">
+          <h3 class="text-lg font-semibold mb-2">Fechamento</h3>
+          <input type="file" accept="image/*" multiple onchange="atualizarFotos(this, 'Fechamento')" class="w-full p-2 border rounded">
+          <div id="previewFechamento" class="grid grid-cols-2 md:grid-cols-3 gap-4 mt-2"></div>
         </div>
       </div>
     </section>
+  </div>
 
+<script>
+  const limiteFotosPorFase = 5;
+  const fotosPorFase = {
+    Montagem: [],
+    Entrada: [],
+    Jogo: [],
+    Evacuação: [],
+    Fechamento: []
+  };
+
+  function atualizarFotos(input, fase) {
+    const previewId = `preview${fase}`;
+    const previewContainer = document.getElementById(previewId);
+    const novosArquivos = Array.from(input.files);
+    const arquivosAtuais = fotosPorFase[fase];
+
+    for (let i = 0; i < novosArquivos.length && arquivosAtuais.length < limiteFotosPorFase; i++) {
+      arquivosAtuais.push(novosArquivos[i]);
+    }
+
+    previewContainer.innerHTML = '';
+    arquivosAtuais.forEach(file => {
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        const img = document.createElement('img');
+        img.src = e.target.result;
+        img.alt = file.name;
+        img.className = 'w-full h-32 object-cover border rounded shadow';
+        previewContainer.appendChild(img);
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+</script>
+
+</body>
+</html>
     <!-- Exportar Relatório -->
     <section class="bg-white p-6 rounded shadow">
       <h2 class="text-xl font-bold mb-4">Exportar Relatório</h2>
