@@ -23,7 +23,6 @@
   <!-- Tela Principal do App -->
   <div id="app" class="hidden max-w-6xl mx-auto p-6 space-y-10">
     <img id="logoEmpresaApp" src="./logo_nm_engenharia.jpg" alt="Logo NM Engenharia" class="mx-auto mb-6 w-40">
-
     <!-- Ajuda Geral -->
     <section class="bg-yellow-100 border-l-4 border-yellow-500 p-4 rounded">
       <h2 class="text-lg font-bold mb-2 text-yellow-800">Ajuda Geral</h2>
@@ -36,6 +35,31 @@
         <li>Ao final, utilize a função de exportar para gerar seu relatório em PDF.</li>
       </ul>
     </section>
+  </div>
+
+  <script>
+    // Garantir que apenas a tela de login seja exibida inicialmente
+    document.addEventListener("DOMContentLoaded", function () {
+      document.getElementById("login").style.display = "block"; // Exibe a tela de login
+      document.getElementById("app").style.display = "none";   // Oculta o restante
+    });
+
+    // Evento para autenticação e transição de telas
+    document.getElementById("entrar").addEventListener("click", function () {
+      const usuario = document.getElementById("usuario").value.trim();
+      const senha = document.getElementById("senha").value.trim();
+
+      // Simulação de autenticação
+      if (usuario === "admin" && senha === "12345") {
+        document.getElementById("login").style.display = "none"; // Oculta a tela de login
+        document.getElementById("app").style.display = "block"; // Exibe a tela principal
+      } else {
+        alert("Usuário ou senha inválidos! Tente novamente.");
+      }
+    });
+  </script>
+</body>
+</html>
 
     <!-- Cadastro de Partida -->
 <section class="bg-white p-6 rounded shadow">
