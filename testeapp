@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>App Segurança em Eventos</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 text-gray-800 font-sans">
+
+  <!-- Tela de Login -->
+  <div id="login" class="max-w-md mx-auto mt-20 bg-white p-8 rounded-xl shadow-md">
+    <img src="./logo_nm_engenharia.jpg" alt="Logo NM Engenharia" class="mx-auto mb-6 w-40">
+    <h2 class="text-2xl font-bold text-center mb-4">Acesso Restrito</h2>
+    <label for="usuario" class="block font-semibold">Usuário</label>
+    <input type="text" id="usuario" class="w-full p-2 border border-gray-300 rounded mb-4" placeholder="Digite seu usuário">
+    <label for="senha" class="block font-semibold">Senha</label>
+    <input type="password" id="senha" class="w-full p-2 border border-gray-300 rounded mb-6" placeholder="Digite sua senha">
+    <button id="entrar" class="bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 w-full">Entrar</button>
+  </div>
+
+  <!-- Tela Principal do App -->
+  <div id="app" class="hidden max-w-6xl mx-auto p-6 space-y-10">
+    <img src="./logo_nm_engenharia.jpg" alt="Logo NM Engenharia" class="mx-auto mb-6 w-40">
+
+    <!-- Ajuda Geral -->
+    <section class="bg-yellow-100 border-l-4 border-yellow-500 p-4 rounded">
+      <h2 class="text-lg font-bold mb-2 text-yellow-800">Ajuda Geral</h2>
+      <ul class="list-disc list-inside text-sm text-yellow-700">
+        <li>Preencha os campos obrigatórios de forma clara e objetiva.</li>
+        <li>Utilize os valores entre 0 e 1 nas análises conforme a legenda apresentada.</li>
+        <li>Faça o upload de fotos com descrição detalhada em cada fase do evento.</li>
+        <li>Registre apenas ocorrências reais, com dados verificados.</li>
+        <li>Use a previsão de risco com IA como suporte à tomada de decisão.</li>
+        <li>Ao final, utilize a função de exportar para gerar seu relatório em PDF.</li>
+      </ul>
+    </section>
+
+    <!-- Relatório Fotográfico -->
+    <section class="bg-white p-6 rounded shadow">
+      <h2 class="text-xl font-bold mb-4">Relatório Fotográfico</h2>
+      <div class="mb-4 p-4 bg-green-50 border-l-4 border-green-400 text-sm text-green-700">
+        <p><strong>Instruções:</strong> Envie até 5 fotos por fase do evento. Cada imagem deve ter uma descrição clara do que está sendo registrado.</p>
+      </div>
+
+      <!-- Fases do Evento -->
+      <div id="relatorioFotografico">
+        <!-- Fase: Montagem -->
+        <div class="mb-6">
+          <h3 class="text-lg font-bold mb-2">Montagem</h3>
+          <input type="file" id="montagemFotos" accept="image/*" multiple class="w-full p-2 border rounded" onchange="atualizarFotos(this, 'montagem')">
+          <div id="previewMontagem" class="grid grid-cols-2 md:grid-cols-3 gap-4 mt-4"></div>
+        </div>
+
+        <!-- Fase: Entrada -->
+        <div class="mb-6">
+          <h3 class="text-lg font-bold mb-2">Entrada</h3>
+          <input type="file" id="entradaFotos" accept="image/*" multiple class="w-full p-2 border rounded" onchange="atualizarFotos(this, 'entrada')">
+          <div id="previewEntrada" class="grid grid-cols-2 md:grid-cols-3 gap-4 mt-4"></div>
+        </div>
+
+        <!-- Fase: Jogo -->
+        <div class="mb-6">
+          <h3 class="text-lg font-bold mb-2">Jogo</h3>
+          <input type="file" id="jogoFotos" accept="image/*" multiple class="w-full p-2 border rounded" onchange="atualizarFotos(this, 'jogo')">
+          <div id="previewJogo" class="grid grid-cols-2 md:grid-cols-3 gap-4 mt-4"></div>
+        </div>
+
+        <!-- Fase: Evacuação -->
+        <div class="mb-6">
+          <h3 class="text-lg font-bold mb-2">Evacuação</h3>
+          <input type="file" id="evacuacaoFotos" accept="image/*" multiple class="w-full p-2 border rounded" onchange="atualizarFotos(this, 'evacuacao')">
+          <div id="previewEvacuacao" class="grid grid-cols-2 md:grid-cols-3 gap-4 mt-4"></div>
+        </div>
+
+        <!-- Fase: Fechamento -->
+        <div class="mb-6">
+          <h3 class="text-lg font-bold mb-2">Fechamento</h3>
+          <input type="file" id="fechamentoFotos" accept="image/*" multiple class="w-full p-2 border rounded" onchange="atualizarFotos(this, 'fechamento')">
+          <div id="previewFechamento" class="grid grid-cols-2 md:grid-cols-3 gap-4 mt-4"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Análise de Risco -->
+    <section class="bg-white p-6 rounded shadow">
+      <div class="mb-4 p-4 bg-blue-50 border-l-4 border-blue-400 text-sm text-blue-700">
+        <p><strong>Legenda dos Campos "0 a 1":</strong></p>
+        <ul class="list-disc list-inside">
+          <li><strong>0</strong> = Condição ideal ou risco nulo</li>
+          <li><strong>0.5</strong> = Situação intermediária ou risco moderado</li>
+          <li><strong>1</strong> = Condição crítica ou alto risco</li>
+        </ul>
+      </div>
+      <h2 class="text-xl font-bold mb-4">Análise de Risco</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+        <div>
+          <label class="block font-semibold">Expectativa de Público</label>
+          <input type="number" id="fatorPublico" class="w-full p-2 border rounded" placeholder="Ex: 10000">
+        </div>
+        <div>
+          <label class="block font-semibold">Nível de Treinamento da Equipe de Segurança</label>
+          <input type="number" id="treinamentoSeguranca" class="w-full p-2 border rounded" placeholder="0 a 1">
+        </div>
+        <div>
+          <label class="block font-semibold">Eficiência dos Checkpoints</label>
+          <input type="number" id="eficienciaCheckpoints" class="w-full p-2 border rounded" placeholder="0 a 1">
+        </div>
+        <div>
+          <label class="block font-semibold">Condição das Vias de Acesso</label>
+          <input type="number" id="condicaoVias" class="w-full p-2 border rounded" placeholder="0 a 1">
+        </div>
+        <div>
+          <label class="block font-semibold">Clima</label>
+          <input type="number" id="clima" class="w-full p-2 border rounded" placeholder="0 a 1">
+        </div>
+        <div>
+          <label class="block font-semibold">Rivalidade entre Torcidas</label>
+          <input type="number" id="rivalidade" class="w-full p-2 border rounded" placeholder="0 a 1">
+        </div>
+        <div>
+          <label class="block font-semibold">Infraestrutura</label>
+          <input type="number" id="infraestrutura" class="w-full p-2 border rounded" placeholder="0 a 1">
+        </div>
+        <div>
+          <label class="block font-semibold">Evacuação</label>
+          <input type="number" id="evacuacao" class="w-full p-2 border rounded" placeholder="0 a 1">
+        </div>
+      </div>
+      <button onclick="preverRiscoIA()" class="mt-6 bg-green-600 text-white py-2 px-4 rounded hover:bg-green-700">Prever Risco com IA</button>
+      <p id="resultadoIA" class="mt-4 font-bold"></p>
+    </section>
+
+    <!-- Exportar Relatório -->
+    <section class="bg-white p-6 rounded shadow">
+      <h2 class="text-xl font-bold mb-4">Exportar Relatório</h2>
+      <button onclick="window.print()" class="bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700">Exportar para PDF</button>
+    </section>
+  </div>
+
+  <script>
+    document.getElementById("entrar").addEventListener("click", function () {
+      document.getElementById("login").style.display = "none";
+      document.getElementById("app").classList.remove("hidden");
+    });
+
+    // Função de previsão de risco
+    function preverRiscoIA() {
+      const publico = parseFloat(document.getElementById('fatorPublico').value || 0);
+      const treinamento = parseFloat(document.getElementById('treinamentoSeguranca').value || 0);
+      const infraestrutura = parseFloat(document.getElementById('infraestrutura').value || 0);
+      const evacuacao = parseFloat(document.getElementById('evacuacao').value || 0);
+      const rivalidade = parseFloat(document.getElementById('rivalidade').value || 0);
+
+      const riscoFinal = (0.4 * publico) + (0.2 * treinamento) + (0.2 * infraestrutura) + (0.1 * evacuacao) + (0.1 * rivalidade);
+
+      let resultado = "Baixo";
+      let cor = "#4CAF50";
+      if (riscoFinal >= 0.7) {
+        resultado = "Alto";
+        cor = "#F44336";
+      } else if (riscoFinal >= 0.4) {
+        resultado = "Moderado";
+        cor = "#FFC107";
+      }
+
+      const el = document.getElementById("resultadoIA");
+      el.innerText = `Previsão de Risco: ${resultado} (${(riscoFinal * 100).toFixed(1)}%)`;
+      el.style.color = "white";
+      el.style.backgroundColor = cor;
+      el.style.padding = "10px";
+      el.style.borderRadius = "6px";
+    }
+
+    // Função para Relatório Fotográfico
+    const limiteFotosPorFase = 5;
+    const fotosPorFase = {
+      montagem: [],
+      entrada: [],
+      jogo: [],
+      evacuacao: [],
+      fechamento: []
+    };
+
+    function atualizarFotos(input, fase) {
+      const previewId = `preview${fase.charAt(0).toUpperCase() + fase.slice(1)}`;
+      const previewContainer = document.getElementById(previewId);
+      const novosArquivos = Array.from(input.files);
+      const arquivosAtuais = fotosPorFase[fase];
+
+      if (arquivosAtuais.length + novosArquivos.length > limiteFotosPorFase) {
+        alert(`Você pode carregar no máximo ${limiteFotosPorFase} fotos para a fase ${fase}.`);
+        input.value = "";
+        return;
+      }
+
+      for (let i = 0; i < novosArquivos.length && arquivosAtuais.length < limiteFotosPorFase; i++) {
+        arquivosAtuais.push(novosArquivos[i]);
+      }
+
+      previewContainer.innerHTML = '';
+      arquivosAtuais.forEach(file => {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          const img = document.createElement('img');
+          img.src = e.target.result;
+          img.alt = file.name;
+          img.className = 'w-full h-32 object-cover border rounded shadow';
+          previewContainer.appendChild(img);
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+  </script>
+</body>
+</html>
