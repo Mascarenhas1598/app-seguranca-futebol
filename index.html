@@ -8,8 +8,7 @@
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-100 text-gray-800 font-sans">
-  
-  <!-- Tela de Login -->
+
   <div id="login" class="max-w-md mx-auto mt-20 bg-white p-8 rounded-xl shadow-md">
     <img id="logoEmpresa" src="./logo_nm_engenharia.jpg" alt="Logo NM Engenharia" class="mx-auto mb-6 w-40">
     <h2 class="text-2xl font-bold text-center mb-4">Acesso Restrito</h2>
@@ -19,26 +18,8 @@
     <input type="password" id="senha" class="w-full p-2 border border-gray-300 rounded mb-6">
     <button id="entrar" class="bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 w-full">Entrar</button>
   </div>
-  
-  <!-- Tela Principal do App -->
-  <div id="app" class="hidden max-w-6xl mx-auto p-6 space-y-10">
-    <img src="./logo_nm_engenharia.jpg" alt="Logo NM Engenharia" class="mx-auto mb-6 w-40">
 
   <div id="app" class="hidden max-w-6xl mx-auto p-6 space-y-10">
-        
-  <img id="logoEmpresa" src="./logo_nm_engenharia.jpg" alt="Logo NM Engenharia" class="mx-auto mb-6 w-40">
-    <!-- Ajuda Geral -->
-    <section class="bg-yellow-100 border-l-4 border-yellow-500 p-4 rounded">
-      <h2 class="text-lg font-bold mb-2 text-yellow-800">Ajuda Geral</h2>
-      <ul class="list-disc list-inside text-sm text-yellow-700">
-        <li>Preencha os campos obrigatórios de forma clara e objetiva.</li>
-        <li>Utilize os valores entre 0 e 1 nas análises conforme a legenda apresentada.</li>
-        <li>Faça o upload de fotos com descrição detalhada em cada fase do evento.</li>
-        <li>Registre apenas ocorrências reais, com dados verificados.</li>
-        <li>Use a previsão de risco com IA como suporte à tomada de decisão.</li>
-        <li>Ao final, utilize a função de exportar para gerar seu relatório em PDF.</li>
-      </ul>
-    </section>
 
     <!-- Ajuda Geral -->
     <section class="bg-yellow-100 border-l-4 border-yellow-500 p-4 rounded">
@@ -54,31 +35,31 @@
     </section>
 
     <!-- Cadastro de Partida -->
-    <section class="bg-white p-6 rounded shadow">
-      <h2 class="text-xl font-bold mb-4">Cadastro da Partida</h2>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <label class="block font-semibold">Data</label>
-          <input type="date" class="w-full p-2 border rounded">
-        </div>
-        <div>
-          <label class="block font-semibold">Horário</label>
-          <input type="time" class="w-full p-2 border rounded">
-        </div>
-        <div class="md:col-span-2">
-          <label class="block font-semibold">Equipes Envolvidas</label>
-          <input type="text" id="equipesEnvolvidas" class="w-full p-2 border rounded">
-        </div>
-        <div>
-          <label class="block font-semibold">Local de Interesse</label>
-          <input type="text" class="w-full p-2 border rounded">
-        </div>
-        <div>
-          <label class="block font-semibold">Capacidade Habilitada do Local</label>
-          <input type="number" class="w-full p-2 border rounded">
-        </div>
-      </div>
-    </section>
+<section class="bg-white p-6 rounded shadow">
+  <h2 class="text-xl font-bold mb-4">Cadastro da Partida</h2>
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div>
+      <label class="block font-semibold">Data</label>
+      <input type="date" class="w-full p-2 border rounded">
+    </div>
+    <div>
+      <label class="block font-semibold">Horário</label>
+      <input type="time" class="w-full p-2 border rounded">
+    </div>
+    <div class="md:col-span-2">
+      <label class="block font-semibold">Equipes Envolvidas</label>
+      <input type="text" id="equipesEnvolvidas" class="w-full p-2 border rounded">
+    </div>
+    <div>
+  <label class="block font-semibold">Local de Interesse</label>
+      <input type="text" class="w-full p-2 border rounded">
+    </div>
+    <div>
+      <label class="block font-semibold">Capacidade Habilitada do Local</label>
+  <input type="number" class="w-full p-2 border rounded">
+</div>
+  </div>
+</section>
 
 <!-- Análise de Risco -->
 <section class="bg-white p-6 rounded shadow">
@@ -101,8 +82,8 @@
       <input type="number" id="treinamentoSeguranca" class="w-full p-2 border rounded" placeholder="0 a 1">
     </div>
     <div>
-      <label class="block font-semibold">Rivalidade entre as torcidas</label>
-      <input type="number" id="Rivalidadetorcidas" class="w-full p-2 border rounded" placeholder="0 a 1">
+      <label class="block font-semibold">Tempo de Inspeção Prévia do Estádio</label>
+      <input type="number" id="tempoInspecao" class="w-full p-2 border rounded" placeholder="0 a 1">
     </div>
     <div>
       <label class="block font-semibold">Eficiência dos Checkpoints</label>
@@ -113,15 +94,15 @@
       <input type="number" id="condicaoVias" class="w-full p-2 border rounded" placeholder="0 a 1">
     </div>
     <div>
-      <label class="block font-semibold">Fase da competicao</label>
-      <input type="number" id="Fasecompeticao" class="w-full p-2 border rounded" placeholder="0 a 1">
+      <label class="block font-semibold">Iluminação Pública no Entorno</label>
+      <input type="number" id="iluminacaoPublica" class="w-full p-2 border rounded" placeholder="0 a 1">
     </div>
     <div>
-      <label class="block font-semibold">Historico de itens proibidos torcida visitante conflitiva</label>
-      <input type="number" id="itensproibidostorcida" class="w-full p-2 border rounded" placeholder="0 a 1">
+      <label class="block font-semibold">Distância até Apoio Policial</label>
+      <input type="number" id="distanciaApoioPolicial" class="w-full p-2 border rounded" placeholder="0 a 1">
     </div>
     <div>
-      <label class="block font-semibold">Dia da Semana (0=Semana, 1=Domingo ou feriado)</label>
+      <label class="block font-semibold">Dia da Semana (0=Segunda, 1=Domingo ou feriado)</label>
       <input type="number" id="diaSemana" class="w-full p-2 border rounded" placeholder="0 a 1">
     </div>
     <div>
@@ -129,12 +110,12 @@
       <input type="number" id="historicoEmocional" class="w-full p-2 border rounded" placeholder="0 a 1">
     </div>
     <div>
-      <label class="block font-semibold">Proximidade entre as torcidas</label>
-      <input type="number" id="Proximidadetorcidas" class="w-full p-2 border rounded" placeholder="0 a 1">
+      <label class="block font-semibold">Monitoramento de Grupos Organizados</label>
+      <input type="number" id="monitoramentoGrupos" class="w-full p-2 border rounded" placeholder="0 a 1">
     </div>
     <div>
-      <label class="block font-semibold">Ativacoes Clube Mandante</label>
-      <input type="number" id="Ativacoes" class="w-full p-2 border rounded" placeholder="0 a 1">
+      <label class="block font-semibold">Mandados de Prisão Pendentes</label>
+      <input type="number" id="mandadosPendentes" class="w-full p-2 border rounded" placeholder="0 a 1">
     </div>
   </div>
       
@@ -144,28 +125,28 @@
 <input type="number" id="fatorEfetivo" class="w-full p-2 border rounded" placeholder="Ex: 50">
         </div>
         <div>
-          <label class="block font-semibold">Sistema de Monitoramento</label>
-          <input type="number" id="monitoramento" class="w-full p-2 border rounded">
+          <label class="block font-semibold">Número de Ocorrências</label>
+          <input type="number" id="fatorOcorrencias" class="w-full p-2 border rounded">
         </div>
         <div>
-          <label class="block font-semibold">Condicoes do clima</label>
+          <label class="block font-semibold">Clima</label>
           <input type="number" id="clima" class="w-full p-2 border rounded" placeholder="0 a 1">
         </div>
         <div>
-          <label class="block font-semibold">Escala de Risco das autoridades Policiais</label>
-          <input type="number" id="Risco" class="w-full p-2 border rounded" placeholder="0 a 1">
+          <label class="block font-semibold">Rivalidade</label>
+          <input type="number" id="rivalidade" class="w-full p-2 border rounded" placeholder="0 a 1">
         </div>
         <div>
-          <label class="block font-semibold">Torcida Visitante conflitiva</label>
+          <label class="block font-semibold">Torcida Visitante</label>
           <input type="number" id="visitante" class="w-full p-2 border rounded" placeholder="0 a 1">
         </div>
         <div>
-          <label class="block font-semibold">Historico de conflitos em partidas anteriores</label>
-          <input type="number" id="conflitos" class="w-full p-2 border rounded" placeholder="0 a 1">
+          <label class="block font-semibold">Infraestrutura</label>
+          <input type="number" id="infraestrutura" class="w-full p-2 border rounded" placeholder="0 a 1">
         </div>
         <div>
-          <label class="block font-semibold">tempo de resposta policial</label>
-          <input type="number" id="respostapolicial" class="w-full p-2 border rounded" placeholder="0 a 1">
+          <label class="block font-semibold">Evacuação</label>
+          <input type="number" id="evacuacao" class="w-full p-2 border rounded" placeholder="0 a 1">
         </div>
       </div>
       <button onclick="preverRiscoIA()" class="mt-6 bg-green-600 text-white py-2 px-4 rounded hover:bg-green-700">Prever Risco com IA</button>
@@ -175,78 +156,27 @@
   <canvas id="graficoImpacto" height="120"></canvas>
 </section>
 <section class="bg-white p-6 rounded shadow">
-  
-   <!-- Relatório Fotográfico -->
-    <section class="bg-white p-6 rounded shadow">
-      <h2 class="text-xl font-bold mb-4">Relatório Fotográfico</h2>
-      <div class="mb-4 p-4 bg-green-50 border-l-4 border-green-400 text-sm text-green-700">
-        <p><strong>Instruções:</strong> Envie até 5 fotos por fase do evento. Cada imagem deve ter uma descrição clara do que está sendo registrado.</p>
-      </div>
-      <div id="fasesContainer" class="space-y-8">
-        <div class="fase-fotografica" data-fase="Montagem">
-          <h3 class="text-lg font-semibold mb-2">Montagem</h3>
-          <input type="file" accept="image/*" multiple onchange="atualizarFotos(this, 'Montagem')" class="w-full p-2 border rounded">
-          <div id="previewMontagem" class="grid grid-cols-2 md:grid-cols-3 gap-4 mt-2"></div>
-        </div>
-        <div class="fase-fotografica" data-fase="Entrada">
-          <h3 class="text-lg font-semibold mb-2">Entrada</h3>
-          <input type="file" accept="image/*" multiple onchange="atualizarFotos(this, 'Entrada')" class="w-full p-2 border rounded">
-          <div id="previewEntrada" class="grid grid-cols-2 md:grid-cols-3 gap-4 mt-2"></div>
-        </div>
-        <div class="fase-fotografica" data-fase="Jogo">
-          <h3 class="text-lg font-semibold mb-2">Jogo</h3>
-          <input type="file" accept="image/*" multiple onchange="atualizarFotos(this, 'Jogo')" class="w-full p-2 border rounded">
-          <div id="previewJogo" class="grid grid-cols-2 md:grid-cols-3 gap-4 mt-2"></div>
-        </div>
-        <div class="fase-fotografica" data-fase="Evacuação">
-          <h3 class="text-lg font-semibold mb-2">Evacuação</h3>
-          <input type="file" accept="image/*" multiple onchange="atualizarFotos(this, 'Evacuação')" class="w-full p-2 border rounded">
-          <div id="previewEvacuação" class="grid grid-cols-2 md:grid-cols-3 gap-4 mt-2"></div>
-        </div>
-        <div class="fase-fotografica" data-fase="Fechamento">
-          <h3 class="text-lg font-semibold mb-2">Fechamento</h3>
-          <input type="file" accept="image/*" multiple onchange="atualizarFotos(this, 'Fechamento')" class="w-full p-2 border rounded">
-          <div id="previewFechamento" class="grid grid-cols-2 md:grid-cols-3 gap-4 mt-2"></div>
-        </div>
+  <h2 class="text-xl font-bold mb-4">Relatório Fotográfico</h2>
+  <div class="mb-4 p-4 bg-green-50 border-l-4 border-green-400 text-sm text-green-700">
+    <p><strong>Instruções:</strong> envie até 5 fotos por fase do evento (Montagem, Entrada, Jogo, Evacuação, Fechamento). Cada imagem deve ter uma descrição clara do que está sendo registrado.</p>
+  </div>
+  <div class="space-y-4">
+    <label class="block font-semibold">Fase do Evento</label>
+    <select class="w-full p-2 border rounded">
+      <option value="Montagem">Montagem</option>
+      <option value="Entrada">Entrada</option>
+      <option value="Jogo">Jogo</option>
+      <option value="Evacuação">Evacuação</option>
+      <option value="Fechamento">Fechamento</option>
+    </select>
+        <label class="block font-semibold">Upload de Fotos (até 5 por fase)</label>
+        <input type="file" accept="image/*" multiple class="w-full p-2 border rounded">
+<div id="previewFotos" class="grid grid-cols-2 md:grid-cols-3 gap-4 mt-4"></div>
+        <label class="block font-semibold">Descrição da Foto</label>
+        <input type="text" maxlength="200" class="w-full p-2 border rounded">
       </div>
     </section>
-  </div>
-  
-<script>
-  const limiteFotosPorFase = 5;
-  const fotosPorFase = {
-    Montagem: [],
-    Entrada: [],
-    Jogo: [],
-    Evacuação: [],
-    Fechamento: []
-    
-  };
-  function atualizarFotos(input, fase) {
-    const previewId = `preview${fase}`;
-    const previewContainer = document.getElementById(previewId);
-    const novosArquivos = Array.from(input.files);
-    const arquivosAtuais = fotosPorFase[fase];
 
-    for (let i = 0; i < novosArquivos.length && arquivosAtuais.length < limiteFotosPorFase; i++) {
-      arquivosAtuais.push(novosArquivos[i]);
-    }
-
-    previewContainer.innerHTML = '';
-    arquivosAtuais.forEach(file => {
-      const reader = new FileReader();
-      reader.onload = function (e) {
-        const img = document.createElement('img');
-        img.src = e.target.result;
-        img.alt = file.name;
-        img.className = 'w-full h-32 object-cover border rounded shadow';
-        previewContainer.appendChild(img);
-      };
-      reader.readAsDataURL(file);
-    });
-  }
-  
-</script>
     <!-- Registro de Ocorrências -->
     <section class="bg-white p-6 rounded shadow">
       <h2 class="text-xl font-bold mb-4">Registro de Ocorrências</h2>
@@ -277,31 +207,15 @@
     <section class="bg-white p-6 rounded shadow">
       <h2 class="text-xl font-bold mb-4">Exportar Relatório</h2>
       <button onclick="window.print()" class="bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700">Exportar para PDF</button>
-   </section>
+    </section>
+
   </div>
-  
 <script>
-    // Garantir que apenas a tela de login seja exibida inicialmente
-    document.addEventListener("DOMContentLoaded", function () {
-      document.getElementById("login").style.display = "block"; // Exibe a tela de login
-      document.getElementById("app").style.display = "none";   // Oculta o restante
-    });
-
-    // Evento para autenticação e transição de telas
-    document.getElementById("entrar").addEventListener("click", function () {
-      const usuario = document.getElementById("usuario").value.trim();
-      const senha = document.getElementById("senha").value.trim();
-
-      // Simulação de autenticação
-      if (usuario === "Admin" && senha === "12345#") {
-        document.getElementById("login").style.display = "none"; // Oculta a tela de login
-        document.getElementById("app").style.display = "block"; // Exibe a tela principal
-      } else {
-        alert("Usuário ou senha inválidos! Tente novamente.");
-      }
-  });
-  
-  function preverRiscoIA() {
+document.getElementById("entrar").addEventListener("click", function () {
+  document.getElementById("login").style.display = "none";
+  document.getElementById("app").classList.remove("hidden");
+});
+function preverRiscoIA() {
   const publico = parseFloat(document.getElementById('fatorPublico')?.value || 0);
   const efetivo = parseFloat(document.getElementById('fatorEfetivo')?.value || 0);
   const ocorrencias = parseFloat(document.getElementById('fatorOcorrencias')?.value || 0);
