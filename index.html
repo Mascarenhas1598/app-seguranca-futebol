@@ -260,15 +260,14 @@
     <section class="bg-white p-6 rounded shadow">
       <h2 class="text-xl font-bold mb-4">Exportar Relatório</h2>
       <button onclick="window.print()" class="bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700">Exportar para PDF</button>
-    </section>
+   </section>
 
   </div>
 <script>
-    document.getElementById("entrar").addEventListener("click", function () {
-      document.getElementById("login").style.display = "none";
-      document.getElementById("app").classList.remove("hidden");  
-   });      
-  
+document.getElementById("entrar").addEventListener("click", function () {
+  document.getElementById("login").style.display = "none";
+  document.getElementById("app").classList.remove("hidden");
+});
 function preverRiscoIA() {
   const publico = parseFloat(document.getElementById('fatorPublico')?.value || 0);
   const efetivo = parseFloat(document.getElementById('fatorEfetivo')?.value || 0);
