@@ -308,12 +308,12 @@ const prob = 1 / (1 + Math.exp(-2 * (riscoFinal - 0.5)));
   }
 
   const el = document.getElementById("resultadoIA");
-  el.innerText = `Previsão de Risco com IA: ${resultado} (Prob: ${(prob * 100).toFixed(1)}%)`;
+  el.innerText = Previsão de Risco com IA: ${resultado} (Prob: ${(prob * 100).toFixed(1)}%);
   el.style.color = "white";
   el.style.backgroundColor = cor;
   el.style.padding = "10px";
   el.style.borderRadius = "6px";
-  el.innerHTML += `<br><small style='display:block; margin-top:10px;'>Impacto por categoria:<br>🔵 Estrutural: ${impactoEstrutural}%<br>🟢 Operacional: ${impactoOperacional}%<br>🟠 Comportamental: ${impactoComportamental}%<br>🔴 Contextual: ${impactoContextual}%</small>`;
+  el.innerHTML += <br><small style='display:block; margin-top:10px;'>Impacto por categoria:<br>🔵 Estrutural: ${impactoEstrutural}%<br>🟢 Operacional: ${impactoOperacional}%<br>🟠 Comportamental: ${impactoComportamental}%<br>🔴 Contextual: ${impactoContextual}%</small>;
   
   // Sugestões automáticas de mitigação
   let sugestoes = [];
@@ -327,7 +327,7 @@ const prob = 1 / (1 + Math.exp(-2 * (riscoFinal - 0.5)));
   } else {
     sugestoes.push("✔️ Manter planejamento padrão com monitoramento preventivo");
   }
-  el.innerHTML += `<br><br><strong>Ações Mitigadoras Sugeridas:</strong><ul class='list-disc list-inside text-sm mt-2'>` + sugestoes.map(s => `<li>${s}</li>`).join('') + `</ul>`;
+  el.innerHTML += <br><br><strong>Ações Mitigadoras Sugeridas:</strong><ul class='list-disc list-inside text-sm mt-2'> + sugestoes.map(s => <li>${s}</li>).join('') + </ul>;
 
   desenharGraficoImpacto(el, impactoEstrutural, impactoOperacional, impactoComportamental, impactoContextual);
 }
