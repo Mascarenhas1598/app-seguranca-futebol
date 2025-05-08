@@ -79,7 +79,78 @@
       </div>
       <h2 class="text-xl font-bold mb-4">Análise de Risco</h2>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-        <!-- Campos de análise de risco... (mantidos iguais) -->
+        <div>
+          <label class="block font-semibold">Expectativa de Público</label>
+          <input type="number" id="fatorPublico" class="w-full p-2 border rounded" placeholder="Ex: 10000">
+        </div>
+        <div>
+          <label class="block font-semibold">Nível de Treinamento da Equipe de Segurança</label>
+          <input type="number" id="treinamentoSeguranca" class="w-full p-2 border rounded" placeholder="0 a 1">
+        </div>
+        <div>
+          <label class="block font-semibold">Tempo de Inspeção Prévia do Estádio</label>
+          <input type="number" id="tempoInspecao" class="w-full p-2 border rounded" placeholder="0 a 1">
+        </div>
+        <div>
+          <label class="block font-semibold">Eficiência dos Checkpoints</label>
+          <input type="number" id="eficienciaCheckpoints" class="w-full p-2 border rounded" placeholder="0 a 1">
+        </div>
+        <div>
+          <label class="block font-semibold">Condição das Vias de Acesso</label>
+          <input type="number" id="condicaoVias" class="w-full p-2 border rounded" placeholder="0 a 1">
+        </div>
+        <div>
+          <label class="block font-semibold">Iluminação Pública no Entorno</label>
+          <input type="number" id="iluminacaoPublica" class="w-full p-2 border rounded" placeholder="0 a 1">
+        </div>
+        <div>
+          <label class="block font-semibold">Distância até Apoio Policial</label>
+          <input type="number" id="distanciaApoioPolicial" class="w-full p-2 border rounded" placeholder="0 a 1">
+        </div>
+        <div>
+          <label class="block font-semibold">Dia da Semana (0=Segunda, 1=Domingo ou feriado)</label>
+          <input type="number" id="diaSemana" class="w-full p-2 border rounded" placeholder="0 a 1">
+        </div>
+        <div>
+          <label class="block font-semibold">Histórico Emocional do Confronto</label>
+          <input type="number" id="historicoEmocional" class="w-full p-2 border rounded" placeholder="0 a 1">
+        </div>
+        <div>
+          <label class="block font-semibold">Monitoramento de Grupos Organizados</label>
+          <input type="number" id="monitoramentoGrupos" class="w-full p-2 border rounded" placeholder="0 a 1">
+        </div>
+        <div>
+          <label class="block font-semibold">Mandados de Prisão Pendentes</label>
+          <input type="number" id="mandadosPendentes" class="w-full p-2 border rounded" placeholder="0 a 1">
+        </div>
+        <div>
+          <label class="block font-semibold">Efetivo Empregado (1 segurança a cada 100 pessoas)</label>
+          <input type="number" id="fatorEfetivo" class="w-full p-2 border rounded" placeholder="Ex: 50">
+        </div>
+        <div>
+          <label class="block font-semibold">Número de Ocorrências</label>
+          <input type="number" id="fatorOcorrencias" class="w-full p-2 border rounded">
+        </div>
+        <div>
+          <label class="block font-semibold">Clima</label>
+          <input type="number" id="clima" class="w-full p-2 border rounded" placeholder="0 a 1">
+        </div>
+        <div>
+          <label class="block font-semibold">Rivalidade</label>
+          <input type="number" id="rivalidade" class="w-full p-2 border rounded" placeholder="0 a 1">
+        </div>
+        <div>
+          <label class="block font-semibold">Torcida Visitante</label>
+          <input type="number" id="visitante" class="w-full p-2 border rounded" placeholder="0 a 1">
+        </div>
+        <div>
+          <label class="block font-semibold">Infraestrutura</label>
+          <input type="number" id="infraestrutura" class="w-full p-2 border rounded" placeholder="0 a 1">
+        </div>
+        <div>
+          <label class="block font-semibold">Evacuação</label>
+          <input type="number" id="evacuacao" class="w-full p-2 border rounded" placeholder="0 a 1">
+        </div>
       </div>
       <button onclick="preverRiscoIA()" class="mt-6 bg-green-600 text-white py-2 px-4 rounded hover:bg-green-700">Prever Risco com IA</button>
       <p id="resultadoIA" class="mt-4 font-bold"></p>
@@ -89,17 +160,6 @@
     <section class="bg-white p-6 rounded shadow">
       <h2 class="text-xl font-bold mb-4">Impacto Visual do Risco</h2>
       <canvas id="graficoImpacto" height="120"></canvas>
-    </section>
-
-    <!-- Relatório Fotográfico -->
-    <section class="bg-white p-6 rounded shadow">
-      <h2 class="text-xl font-bold mb-4">Relatório Fotográfico</h2>
-      <div class="mb-4 p-4 bg-green-50 border-l-4 border-green-400 text-sm text-green-700">
-        <p><strong>Instruções:</strong> Envie até 5 fotos por fase do evento. Cada imagem deve ter uma descrição clara do que está sendo registrado.</p>
-      </div>
-      <div id="fasesContainer" class="space-y-8">
-        <!-- Fases fotográficas... (mantidas iguais) -->
-      </div>
     </section>
 
     <!-- Exportar Relatório -->
