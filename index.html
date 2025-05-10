@@ -220,6 +220,7 @@
       Evacuação: [],
       Fechamento: []
     };
+    let impactoChart = null;
 
     // Inicialização
     document.addEventListener('DOMContentLoaded', function() {
@@ -229,27 +230,145 @@
       
       // Login
       document.getElementById("entrar").addEventListener("click", function() {
-        document.getElementById("login").style.display = "none";
-        document.getElementById("app").classList.remove("hidden");
+        const usuario = document.getElementById("usuario").value;
+        const senha = document.getElementById("senha").value;
+        
+        // Validação básica (em produção, use autenticação segura)
+        if (usuario && senha) {
+          document.getElementById("login").style.display = "none";
+          document.getElementById("app").classList.remove("hidden");
+          // Inicializa o gráfico vazio
+          desenharGraficoImpacto(0, 0, 0, 0);
+        } else {
+          alert("Por favor, preencha usuário e senha");
+        }
       });
       
       // Exportar PDF
       document.getElementById("exportarPDF").addEventListener("click", gerarRelatorioPDF);
     });
 
-    // Funções para manipulação de fotos (mantidas iguais)
+    // Funções para manipulação de fotos
     function atualizarFotos(input, fase) {
-      // ... (código existente)
+      const previewDiv = document.getElementById(`preview${fase.replace('ã', 'a')}`);
+      previewDiv.innerHTML = '';
+      
+      // Limpa fotos anteriores desta fase
+      fotosPorFase[fase] = [];
+      
+      // Verifica se há arquivos e limita a quantidade
+      if (input.files && input.files.length > 0) {
+        const files = Array.from(input.files).slice(0, limiteFotosPorFase);
+        
+        files.forEach((file, index) => {
+          // Armazena o arquivo original
+          fotosPorFase[fase].push(file);
+          
+          // Cria preview
+          const reader = new FileReader();
+          reader.onload = function(e) {
+            const imgContainer = document.createElement('div');
+            imgContainer.className = 'relative';
+            
+            const img = document.createElement('img');
+            img.src = e.target.result;
+            img.className = 'h-32 w-full object-cover rounded border';
+            img.alt = `Foto ${index+1} - ${fase}`;
+            
+            const desc = document.createElement('p');
+            desc.className = 'text-xs truncate';
+            desc.textContent = file.name.substring(0, 30);
+            
+            imgContainer.appendChild(img);
+            imgContainer.appendChild(desc);
+            previewDiv.appendChild(imgContainer);
+          };
+          reader.readAsDataURL(file);
+        });
+      }
     }
 
-    // Função para prever risco (mantida igual)
+    // Função para prever risco
     function preverRiscoIA() {
-      // ... (código existente)
+      // Coletar todos os valores dos campos de risco
+      const fatores = {
+        publico: parseFloat(document.getElementById('fatorPublico').value) || 0,
+        treinamento: parseFloat(document.getElementById('treinamentoSeguranca').value) || 0.5,
+        inspecao: parseFloat(document.getElementById('tempoInspecao').value) || 0.5,
+        checkpoints: parseFloat(document.getElementById('eficienciaCheckpoints').value) || 0.5,
+        vias: parseFloat(document.getElementById('condicaoVias').value) || 0.5,
+        iluminacao: parseFloat(document.getElementById('iluminacaoPublica').value) || 0.5,
+        apoioPolicial: parseFloat(document.getElementById('distanciaApoioPolicial').value) || 0.5,
+        diaSemana: parseFloat(document.getElementById('diaSemana').value) || 0,
+        historico: parseFloat(document.getElementById('historicoEmocional').value) || 0.5,
+        monitoramento: parseFloat(document.getElementById('monitoramentoGrupos').value) || 0.5,
+        mandados: parseFloat(document.getElementById('mandadosPendentes').value) || 0,
+        efetivo: parseFloat(document.getElementById('fatorEfetivo').value) || 0,
+        ocorrencias: parseFloat(document.getElementById('fatorOcorrencias').value) || 0,
+        clima: parseFloat(document.getElementById('clima').value) || 0.5,
+        rivalidade: parseFloat(document.getElementById('rivalidade').value) || 0.5,
+        visitante: parseFloat(document.getElementById('visitante').value) || 0.5,
+        infraestrutura: parseFloat(document.getElementById('infraestrutura').value) || 0.5,
+        evacuacao: parseFloat(document.getElementById('evacuacao').value) || 0.5
+      };
+
+      // Cálculo dos pesos (exemplo simplificado)
+      const riscoEstrutural = (fatores.infraestrutura + fatores.evacuacao + fatores.vias + fatores.iluminacao) / 4;
+      const riscoOperacional = (fatores.treinamento + fatores.inspecao + fatores.checkpoints + fatores.efetivo) / 4;
+      const riscoComportamental = (fatores.historico + fatores.rivalidade + fatores.visitante + fatores.mandados) / 4;
+      const riscoContextual = (fatores.diaSemana + fatores.clima + fatores.apoioPolicial + fatores.monitoramento) / 4;
+
+      // Risco geral ponderado
+      const riscoGeral = (riscoEstrutural * 0.3 + riscoOperacional * 0.3 + riscoComportamental * 0.2 + riscoContextual * 0.2) * 100;
+
+      // Exibir resultados
+      const resultadoElement = document.getElementById('resultadoIA');
+      resultadoElement.innerHTML = `
+        <span class="text-${riscoGeral > 70 ? 'red' : riscoGeral > 40 ? 'orange' : 'green'}-600">
+          Risco calculado: ${riscoGeral.toFixed(1)}% (${riscoGeral > 70 ? 'ALTO' : riscoGeral > 40 ? 'MODERADO' : 'BAIXO'})
+        </span><br>
+        Estrutural: ${(riscoEstrutural * 100).toFixed(1)}%<br>
+        Operacional: ${(riscoOperacional * 100).toFixed(1)}%<br>
+        Comportamental: ${(riscoComportamental * 100).toFixed(1)}%<br>
+        Contextual: ${(riscoContextual * 100).toFixed(1)}%
+      `;
+
+      // Atualizar gráfico
+      desenharGraficoImpacto(riscoEstrutural, riscoOperacional, riscoComportamental, riscoContextual);
     }
 
-    // Função para desenhar gráfico (mantida igual)
+    // Função para desenhar gráfico
     function desenharGraficoImpacto(estrutural, operacional, comportamental, contextual) {
-      // ... (código existente)
+      const ctx = document.getElementById('graficoImpacto').getContext('2d');
+      
+      // Destrói o gráfico anterior se existir
+      if (impactoChart) {
+        impactoChart.destroy();
+      }
+      
+      impactoChart = new Chart(ctx, {
+        type: 'radar',
+        data: {
+          labels: ['Estrutural', 'Operacional', 'Comportamental', 'Contextual'],
+          datasets: [{
+            label: 'Nível de Risco',
+            data: [estrutural, operacional, comportamental, contextual],
+            backgroundColor: 'rgba(59, 130, 246, 0.2)',
+            borderColor: 'rgba(59, 130, 246, 1)',
+            borderWidth: 2,
+            pointBackgroundColor: 'rgba(59, 130, 246, 1)'
+          }]
+        },
+        options: {
+          scales: {
+            r: {
+              angleLines: { display: true },
+              suggestedMin: 0,
+              suggestedMax: 1
+            }
+          }
+        }
+      });
     }
 
     // Funções auxiliares para PDF
@@ -268,7 +387,7 @@
       });
     }
 
-    // Função principal para gerar PDF (totalmente revisada)
+    // Função principal para gerar PDF
     async function gerarRelatorioPDF() {
       const exportBtn = document.getElementById("exportarPDF");
       const loadingIndicator = document.getElementById("loadingPDF");
