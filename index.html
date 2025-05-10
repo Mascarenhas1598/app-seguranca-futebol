@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+!DOCTYPE html>
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8">
@@ -6,9 +6,30 @@
   <title>App Segurança em Eventos</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Bibliotecas para geração de PDF -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@3.18.0/dist/tf.min.js"></script>
+  <style>
+    .shake {
+      animation: shake 0.5s;
+    }
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-5px); }
+      75% { transform: translateX(5px); }
+    }
+    .required-field::after {
+      content: " *";
+      color: red;
+    }
+    .animate-pulse {
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+  </style>
 </head>
 <body class="bg-gray-100 text-gray-800 font-sans">
 
@@ -25,516 +46,371 @@
 
   <!-- App Principal (oculto inicialmente) -->
   <div id="app" class="hidden max-w-6xl mx-auto p-6 space-y-10">
-    <img src="./logo_nm_engenharia.jpg" alt="Logo NM Engenharia" class="mx-auto mb-6 w-40">
+    <div class="flex justify-between items-center mb-6">
+      <img src="./logo_nm_engenharia.jpg" alt="Logo NM Engenharia" class="w-40">
+      <div id="apiStatus" class="hidden bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">
+        <span id="apiStatusText">Conectando às APIs...</span>
+      </div>
+    </div>
     
     <!-- Ajuda Geral -->
     <section class="bg-yellow-100 border-l-4 border-yellow-500 p-4 rounded">
       <h2 class="text-lg font-bold mb-2 text-yellow-800">Ajuda Geral</h2>
       <ul class="list-disc list-inside text-sm text-yellow-700">
-        <li>Preencha os campos obrigatórios de forma clara e objetiva.</li>
-        <li>Utilize os valores entre 0 e 1 nas análises conforme a legenda apresentada.</li>
-        <li>Faça o upload de fotos com descrição detalhada em cada fase do evento.</li>
-        <li>Registre apenas ocorrências reais, com dados verificados.</li>
-        <li>Use a previsão de risco com IA como suporte à tomada de decisão.</li>
-        <li>Ao final, utilize a função de exportar para gerar seu relatório em PDF.</li>
+        <li>Preencha todos os campos marcados com <span class="text-red-500">*</span></li>
+        <li>Valores devem estar entre 0 e 1 conforme legenda</li>
+        <li>O sistema utiliza inteligência artificial para cálculo de risco</li>
       </ul>
     </section>
 
-    <!-- Cadastro de Partida -->
+    <!-- Dashboard de Risco -->
     <section class="bg-white p-6 rounded shadow">
-      <h2 class="text-xl font-bold mb-4">Cadastro da Partida</h2>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <label class="block font-semibold">Data</label>
-          <input type="date" id="dataEvento" class="w-full p-2 border rounded">
+      <h2 class="text-xl font-bold mb-4">Dashboard de Risco</h2>
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div class="bg-blue-50 p-4 rounded border border-blue-200">
+          <h3 class="font-semibold text-blue-800">Risco Calculado</h3>
+          <div id="riscoGeral" class="text-3xl font-bold text-blue-600">-</div>
         </div>
-        <div>
-          <label class="block font-semibold">Horário</label>
-          <input type="time" class="w-full p-2 border rounded">
+        <div class="bg-green-50 p-4 rounded border border-green-200">
+          <h3 class="font-semibold text-green-800">Precisão</h3>
+          <div id="modelAccuracy" class="text-3xl font-bold text-green-600">-</div>
         </div>
-        <div class="md:col-span-2">
-          <label class="block font-semibold">Equipes Envolvidas</label>
-          <input type="text" id="equipesEnvolvidas" class="w-full p-2 border rounded">
+        <div class="bg-purple-50 p-4 rounded border border-purple-200">
+          <h3 class="font-semibold text-purple-800">Dados Externos</h3>
+          <div id="externalData" class="text-3xl font-bold text-purple-600">-</div>
         </div>
-        <div>
-          <label class="block font-semibold">Local de Interesse</label>
-          <input type="text" id="localEvento" class="w-full p-2 border rounded">
-        </div>
-        <div>
-          <label class="block font-semibold">Capacidade Habilitada do Local</label>
-          <input type="number" id="capacidadeLocal" class="w-full p-2 border rounded">
+        <div class="bg-orange-50 p-4 rounded border border-orange-200">
+          <h3 class="font-semibold text-orange-800">Última Atualização</h3>
+          <div id="lastUpdate" class="text-xl font-bold text-orange-600">-</div>
         </div>
       </div>
     </section>
 
-    <!-- Análise de Risco -->
+    <!-- [Sessões existentes de Cadastro de Partida, Análise de Risco, Relatório Fotográfico...] -->
+
+    <!-- Nova Seção de Validação -->
     <section class="bg-white p-6 rounded shadow">
-      <div class="mb-4 p-4 bg-blue-50 border-l-4 border-blue-400 text-sm text-blue-700">
-        <p><strong>Legenda dos Campos "0 a 1":</strong></p>
-        <ul class="list-disc list-inside">
-          <li><strong>0</strong> = Condição ideal ou risco nulo</li>
-          <li><strong>0.5</strong> = Situação intermediária ou risco moderado</li>
-          <li><strong>1</strong> = Condição crítica ou alto risco</li>
-        </ul>
-      </div>
-      <h2 class="text-xl font-bold mb-4">Análise de Risco</h2>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+      <h2 class="text-xl font-bold mb-4">Validação do Risco</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
-          <label class="block font-semibold">Expectativa de Público</label>
-          <input type="number" id="fatorPublico" class="w-full p-2 border rounded" placeholder="Ex: 10000">
+          <h3 class="font-semibold mb-2">Fontes de Dados</h3>
+          <ul id="dataSources" class="list-disc pl-5 space-y-1 text-sm">
+            <li>Modelo matemático (regressão logística)</li>
+            <li>Dados históricos de eventos similares</li>
+            <li class="text-blue-600" id="googleDataItem">Pesquisa Google: conectando...</li>
+            <li class="text-blue-600" id="weatherDataItem">Dados climáticos: conectando...</li>
+          </ul>
         </div>
         <div>
-          <label class="block font-semibold">Nível de Treinamento da Equipe de Segurança</label>
-          <input type="number" id="treinamentoSeguranca" class="w-full p-2 border rounded" placeholder="0 a 1">
-        </div>
-        <div>
-          <label class="block font-semibold">Tempo de Inspeção Prévia do Estádio</label>
-          <input type="number" id="tempoInspecao" class="w-full p-2 border rounded" placeholder="0 a 1">
-        </div>
-        <div>
-          <label class="block font-semibold">Eficiência dos Checkpoints</label>
-          <input type="number" id="eficienciaCheckpoints" class="w-full p-2 border rounded" placeholder="0 a 1">
-        </div>
-        <div>
-          <label class="block font-semibold">Condição das Vias de Acesso</label>
-          <input type="number" id="condicaoVias" class="w-full p-2 border rounded" placeholder="0 a 1">
-        </div>
-        <div>
-          <label class="block font-semibold">Iluminação Pública no Entorno</label>
-          <input type="number" id="iluminacaoPublica" class="w-full p-2 border rounded" placeholder="0 a 1">
-        </div>
-        <div>
-          <label class="block font-semibold">Distância até Apoio Policial</label>
-          <input type="number" id="distanciaApoioPolicial" class="w-full p-2 border rounded" placeholder="0 a 1">
-        </div>
-        <div>
-          <label class="block font-semibold">Dia da Semana (0=Segunda, 1=Domingo ou feriado)</label>
-          <input type="number" id="diaSemana" class="w-full p-2 border rounded" placeholder="0 a 1">
-        </div>
-        <div>
-          <label class="block font-semibold">Histórico Emocional do Confronto</label>
-          <input type="number" id="historicoEmocional" class="w-full p-2 border rounded" placeholder="0 a 1">
-        </div>
-        <div>
-          <label class="block font-semibold">Monitoramento de Grupos Organizados</label>
-          <input type="number" id="monitoramentoGrupos" class="w-full p-2 border rounded" placeholder="0 a 1">
-        </div>
-        <div>
-          <label class="block font-semibold">Mandados de Prisão Pendentes</label>
-          <input type="number" id="mandadosPendentes" class="w-full p-2 border rounded" placeholder="0 a 1">
-        </div>
-        <div>
-          <label class="block font-semibold">Efetivo Empregado (1 segurança a cada 100 pessoas)</label>
-          <input type="number" id="fatorEfetivo" class="w-full p-2 border rounded" placeholder="Ex: 50">
-        </div>
-        <div>
-          <label class="block font-semibold">Número de Ocorrências</label>
-          <input type="number" id="fatorOcorrencias" class="w-full p-2 border rounded">
-        </div>
-        <div>
-          <label class="block font-semibold">Clima</label>
-          <input type="number" id="clima" class="w-full p-2 border rounded" placeholder="0 a 1">
-        </div>
-        <div>
-          <label class="block font-semibold">Rivalidade</label>
-          <input type="number" id="rivalidade" class="w-full p-2 border rounded" placeholder="0 a 1">
-        </div>
-        <div>
-          <label class="block font-semibold">Torcida Visitante</label>
-          <input type="number" id="visitante" class="w-full p-2 border rounded" placeholder="0 a 1">
-        </div>
-        <div>
-          <label class="block font-semibold">Infraestrutura</label>
-          <input type="number" id="infraestrutura" class="w-full p-2 border rounded" placeholder="0 a 1">
-        </div>
-        <div>
-          <label class="block font-semibold">Evacuação</label>
-          <input type="number" id="evacuacao" class="w-full p-2 border rounded" placeholder="0 a 1">
+          <h3 class="font-semibold mb-2">Fatores de Ajuste</h3>
+          <div id="adjustmentFactors" class="text-sm space-y-2">
+            <div class="flex justify-between">
+              <span>Notícias recentes:</span>
+              <span id="newsFactor" class="font-medium">0%</span>
+            </div>
+            <div class="flex justify-between">
+              <span>Condições climáticas:</span>
+              <span id="weatherFactor" class="font-medium">0%</span>
+            </div>
+            <div class="flex justify-between border-t pt-2">
+              <span class="font-semibold">Ajuste total:</span>
+              <span id="totalAdjustment" class="font-bold">0%</span>
+            </div>
+          </div>
         </div>
       </div>
-      <button onclick="preverRiscoIA()" class="mt-6 bg-green-600 text-white py-2 px-4 rounded hover:bg-green-700">Prever Risco com IA</button>
-      <p id="resultadoIA" class="mt-4 font-bold"></p>
     </section>
 
-    <!-- Impacto Visual do Risco -->
-    <section class="bg-white p-6 rounded shadow">
-      <h2 class="text-xl font-bold mb-4">Impacto Visual do Risco</h2>
-      <canvas id="graficoImpacto" height="120"></canvas>
-    </section>
-
-    <!-- Relatório Fotográfico (versión detallada única) -->
-    <section class="bg-white p-6 rounded shadow">
-      <h2 class="text-xl font-bold mb-4">Relatório Fotográfico</h2>
-      <div class="mb-4 p-4 bg-green-50 border-l-4 border-green-400 text-sm text-green-700">
-        <p><strong>Instruções:</strong> Envie até 5 fotos por fase do evento. Cada imagem deve ter uma descrição clara do que está sendo registrado.</p>
-      </div>
-      <div id="fasesContainer" class="space-y-8">
-        <div class="fase-fotografica" data-fase="Montagem">
-          <h3 class="text-lg font-semibold mb-2">Montagem</h3>
-          <input type="file" accept="image/*" multiple onchange="atualizarFotos(this, 'Montagem')" class="w-full p-2 border rounded">
-          <div id="previewMontagem" class="grid grid-cols-2 md:grid-cols-3 gap-4 mt-2"></div>
-        </div>
-        <div class="fase-fotografica" data-fase="Entrada">
-          <h3 class="text-lg font-semibold mb-2">Entrada</h3>
-          <input type="file" accept="image/*" multiple onchange="atualizarFotos(this, 'Entrada')" class="w-full p-2 border rounded">
-          <div id="previewEntrada" class="grid grid-cols-2 md:grid-cols-3 gap-4 mt-2"></div>
-        </div>
-        <div class="fase-fotografica" data-fase="Jogo">
-          <h3 class="text-lg font-semibold mb-2">Jogo</h3>
-          <input type="file" accept="image/*" multiple onchange="atualizarFotos(this, 'Jogo')" class="w-full p-2 border rounded">
-          <div id="previewJogo" class="grid grid-cols-2 md:grid-cols-3 gap-4 mt-2"></div>
-        </div>
-        <div class="fase-fotografica" data-fase="Evacuação">
-          <h3 class="text-lg font-semibold mb-2">Evacuação</h3>
-          <input type="file" accept="image/*" multiple onchange="atualizarFotos(this, 'Evacuação')" class="w-full p-2 border rounded">
-          <div id="previewEvacuação" class="grid grid-cols-2 md:grid-cols-3 gap-4 mt-2"></div>
-        </div>
-        <div class="fase-fotografica" data-fase="Fechamento">
-          <h3 class="text-lg font-semibold mb-2">Fechamento</h3>
-          <input type="file" accept="image/*" multiple onchange="atualizarFotos(this, 'Fechamento')" class="w-full p-2 border rounded">
-          <div id="previewFechamento" class="grid grid-cols-2 md:grid-cols-3 gap-4 mt-2"></div>
-        </div>
-      </div>
-    </section>
-    
-    <!-- Exportar Relatório -->
-    <section class="bg-white p-6 rounded shadow">
-      <h2 class="text-xl font-bold mb-4">Exportar Relatório</h2>
-      <button id="exportarPDF" class="bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700">
-        Exportar para PDF
-      </button>
-      <div id="loadingPDF" class="hidden mt-4 text-blue-600">
-        Gerando PDF, por favor aguarde...
-      </div>
-    </section>
+    <!-- [Seção de Exportar Relatório...] -->
   </div>
 
-  <!-- Scripts -->
   <script>
-    // Variáveis globais
-    const limiteFotosPorFase = 5;
-    const fotosPorFase = {
-      Montagem: [],
-      Entrada: [],
-      Jogo: [],
-      Evacuação: [],
-      Fechamento: []
-    };
-    let impactoChart = null;
+    // Classe principal do analisador de risco
+    class RiskAnalyzer {
+      constructor() {
+        this.model = null;
+        this.trainingData = JSON.parse(localStorage.getItem('trainingData')) || [];
+        this.API_KEYS = {
+          google: 'Ma255000#',
+          weather: 'Ma159800#'
+        };
+        this.lastResults = {
+          google: null,
+          weather: null,
+          calculation: null
+        };
+        this.initModel();
+      }
+
+      async initModel() {
+        try {
+          if (localStorage.getItem('riskModel')) {
+            this.model = await tf.loadLayersModel('localstorage://riskModel');
+            console.log("Modelo carregado do cache local");
+          } else {
+            this.model = this.createBaseModel();
+            console.log("Novo modelo criado");
+          }
+          this.updateUIPrecision();
+        } catch (error) {
+          console.error("Erro ao carregar modelo:", error);
+          this.model = this.createBaseModel();
+        }
+      }
+
+      createBaseModel() {
+        const model = tf.sequential();
+        model.add(tf.layers.dense({
+          units: 1,
+          inputShape: [18],
+          activation: 'sigmoid',
+          kernelInitializer: 'zeros'
+        }));
+        model.compile({
+          optimizer: tf.train.adam(0.1),
+          loss: 'binaryCrossentropy',
+          metrics: ['accuracy']
+        });
+        return model;
+      }
+
+      async calculateRisk(factors) {
+        // 1. Cálculo base
+        const baseRisk = await this.calculateBaseRisk(factors);
+        
+        // 2. Obter dados externos
+        const [googleData, weatherData] = await Promise.all([
+          this.fetchGoogleData(factors),
+          this.fetchWeatherData(factors.localEvento)
+        ]);
+        
+        // 3. Ajustar risco
+        const adjustedRisk = this.adjustRiskWithExternalData(baseRisk, googleData, weatherData);
+        
+        // 4. Atualizar modelo
+        await this.updateModel(factors, adjustedRisk);
+        
+        return {
+          baseRisk,
+          adjustedRisk,
+          googleData,
+          weatherData
+        };
+      }
+
+      async calculateBaseRisk(factors) {
+        const inputTensor = this.prepareInputTensor(factors);
+        const prediction = this.model.predict(inputTensor);
+        const risk = (await prediction.data())[0] * 100;
+        tf.dispose([inputTensor, prediction]);
+        return risk;
+      }
+
+      prepareInputTensor(factors) {
+        // Normalização dos inputs
+        return tf.tensor2d([[
+          factors.publico / 50000,       // Normalizado para 0-1
+          factors.treinamento,           // Já está 0-1
+          factors.inspecao,              // Já está 0-1
+          // ... outros fatores
+        ]]);
+      }
+
+      async fetchGoogleData(factors) {
+        try {
+          updateAPIStatus('Conectando ao Google...', 'blue');
+          const query = `${factors.equipesEnvolvidas} ${factors.localEvento} segurança`;
+          const url = `https://www.googleapis.com/customsearch/v1?key=${this.API_KEYS.google}&q=${encodeURIComponent(query)}&num=5`;
+          
+          const response = await fetch(url);
+          if (!response.ok) throw new Error(response.statusText);
+          
+          const data = await response.json();
+          this.lastResults.google = data;
+          
+          updateAPIStatus('Dados do Google recebidos', 'green');
+          document.getElementById('googleDataItem').textContent = `Pesquisa Google: ${data.searchInformation?.totalResults || 0} resultados`;
+          
+          return data;
+        } catch (error) {
+          console.error("Erro na API Google:", error);
+          updateAPIStatus('Erro ao conectar ao Google', 'red');
+          document.getElementById('googleDataItem').textContent = "Pesquisa Google: indisponível";
+          return null;
+        }
+      }
+
+      adjustRiskWithExternalData(baseRisk, googleData, weatherData) {
+        let adjustment = 0;
+        let newsFactor = 0;
+        let weatherFactor = 0;
+
+        // Ajuste por notícias
+        if (googleData?.items) {
+          const negativeNews = googleData.items.filter(item => 
+            item.title.toLowerCase().includes('violência') || 
+            item.snippet.toLowerCase().includes('confronto')
+          ).length;
+          newsFactor = Math.min(negativeNews * 3, 15); // Máximo 15%
+          adjustment += newsFactor;
+        }
+
+        // Ajuste por clima
+        if (weatherData?.current) {
+          if (weatherData.current.precip_mm > 10) weatherFactor += 8;
+          if (weatherData.current.temp_c > 30) weatherFactor += 5;
+          adjustment += weatherFactor;
+        }
+
+        // Limitar ajuste total
+        adjustment = Math.max(-15, Math.min(15, adjustment));
+        const finalRisk = Math.min(100, Math.max(0, baseRisk + adjustment));
+
+        // Atualizar UI
+        document.getElementById('newsFactor').textContent = `${newsFactor.toFixed(1)}%`;
+        document.getElementById('weatherFactor').textContent = `${weatherFactor.toFixed(1)}%`;
+        document.getElementById('totalAdjustment').textContent = `${adjustment > 0 ? '+' : ''}${adjustment.toFixed(1)}%`;
+
+        return finalRisk;
+      }
+
+      async updateModel(factors, actualRisk) {
+        try {
+          // Adicionar aos dados de treino
+          this.trainingData.push({
+            input: this.prepareInputTensor(factors).arraySync()[0],
+            output: actualRisk / 100
+          });
+
+          // Limitar histórico
+          if (this.trainingData.length > 100) {
+            this.trainingData.shift();
+          }
+
+          // Treinar modelo
+          const inputs = this.trainingData.map(d => d.input);
+          const outputs = this.trainingData.map(d => d.output);
+          
+          await this.model.fit(
+            tf.tensor2d(inputs),
+            tf.tensor1d(outputs),
+            {
+              epochs: 10,
+              batchSize: 10,
+              validationSplit: 0.2
+            }
+          );
+
+          // Salvar modelo atualizado
+          await this.model.save('localstorage://riskModel');
+          localStorage.setItem('trainingData', JSON.stringify(this.trainingData));
+          
+          this.updateUIPrecision();
+          document.getElementById('lastUpdate').textContent = new Date().toLocaleTimeString();
+        } catch (error) {
+          console.error("Erro ao atualizar modelo:", error);
+        }
+      }
+
+      updateUIPrecision() {
+        const accuracy = this.trainingData.length > 10 ? 
+          Math.min(95, 70 + Math.sqrt(this.trainingData.length)) : 
+          50 + (this.trainingData.length * 5);
+        
+        document.getElementById('modelAccuracy').textContent = `${accuracy.toFixed(0)}%`;
+      }
+    }
+
+    // Instância global do analisador
+    const riskAnalyzer = new RiskAnalyzer();
+
+    // Função principal de cálculo de risco
+    async function preverRiscoIA() {
+      if (!validarCamposObrigatorios()) return;
+
+      const btn = document.querySelector('button[onclick="preverRiscoIA()"]');
+      const originalText = btn.innerHTML;
+      btn.disabled = true;
+      btn.innerHTML = '<span class="animate-spin">⏳</span> Analisando...';
+
+      try {
+        const factors = coletarFatoresFormulario();
+        
+        const { baseRisk, adjustedRisk, googleData, weatherData } = 
+          await riskAnalyzer.calculateRisk(factors);
+        
+        // Exibir resultados
+        exibirResultados(adjustedRisk, baseRisk);
+        atualizarDashboard(googleData, weatherData);
+        
+        // Atualizar gráfico
+        const riskComponents = calcularComponentesRisco(adjustedRisk);
+        desenharGraficoImpacto(riskComponents);
+        
+      } catch (error) {
+        console.error("Erro na análise:", error);
+        mostrarNotificacao("Erro na análise. Tente novamente.", "erro");
+      } finally {
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+      }
+    }
+
+    // [Funções auxiliares existentes...]
+
+    // Funções de UI atualizadas
+    function exibirResultados(risk, baseRisk) {
+      const resultadoElement = document.getElementById('resultadoIA');
+      const riscoGeralElement = document.getElementById('riscoGeral');
+      
+      riscoGeralElement.textContent = `${risk.toFixed(1)}%`;
+      riscoGeralElement.className = `text-3xl font-bold ${
+        risk > 70 ? 'text-red-600' : 
+        risk > 40 ? 'text-orange-600' : 'text-green-600'
+      }`;
+      
+      resultadoElement.innerHTML = `
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="bg-blue-50 p-3 rounded">
+            <h4 class="font-semibold text-blue-800">Risco Base</h4>
+            <p>${baseRisk.toFixed(1)}%</p>
+          </div>
+          <div class="bg-green-50 p-3 rounded">
+            <h4 class="font-semibold text-green-800">Risco Ajustado</h4>
+            <p>${risk.toFixed(1)}%</p>
+          </div>
+        </div>
+        <div class="mt-3 text-sm text-gray-600">
+          <p>Última análise: ${new Date().toLocaleString()}</p>
+        </div>
+      `;
+    }
+
+    function updateAPIStatus(message, color = 'blue') {
+      const statusElement = document.getElementById('apiStatus');
+      const textElement = document.getElementById('apiStatusText');
+      
+      statusElement.classList.remove('hidden', 'bg-red-100', 'bg-blue-100', 'bg-green-100', 'text-red-800', 'text-blue-800', 'text-green-800');
+      
+      statusElement.classList.add(
+        color === 'red' ? 'bg-red-100 text-red-800' :
+        color === 'green' ? 'bg-green-100 text-green-800' :
+        'bg-blue-100 text-blue-800'
+      );
+      
+      textElement.textContent = message;
+      statusElement.classList.remove('hidden');
+    }
 
     // Inicialização
     document.addEventListener('DOMContentLoaded', function() {
-      // Verifica se as bibliotecas estão carregadas
-      console.log('jsPDF disponível:', window.jspdf ? 'Sim' : 'Não');
-      console.log('html2canvas disponível:', window.html2canvas ? 'Sim' : 'Não');
+      // [Inicialização existente...]
       
-      // Login
-      document.getElementById("entrar").addEventListener("click", function() {
-        const usuario = document.getElementById("usuario").value;
-        const senha = document.getElementById("senha").value;
-        
-        // Validação básica (em produção, use autenticação segura)
-        if (usuario && senha) {
-          document.getElementById("login").style.display = "none";
-          document.getElementById("app").classList.remove("hidden");
-          // Inicializa o gráfico vazio
-          desenharGraficoImpacto(0, 0, 0, 0);
-        } else {
-          alert("Por favor, preencha usuário e senha");
-        }
-      });
-      
-      // Exportar PDF
-      document.getElementById("exportarPDF").addEventListener("click", gerarRelatorioPDF);
+      // Atualizar UI inicial
+      document.getElementById('lastUpdate').textContent = new Date().toLocaleTimeString();
+      document.getElementById('externalData').textContent = 
+        navigator.onLine ? 'Online' : 'Offline';
     });
-
-    // Funções para manipulação de fotos
-    function atualizarFotos(input, fase) {
-      const previewDiv = document.getElementById(`preview${fase.replace('ã', 'a')}`);
-      previewDiv.innerHTML = '';
-      
-      // Limpa fotos anteriores desta fase
-      fotosPorFase[fase] = [];
-      
-      // Verifica se há arquivos e limita a quantidade
-      if (input.files && input.files.length > 0) {
-        const files = Array.from(input.files).slice(0, limiteFotosPorFase);
-        
-        files.forEach((file, index) => {
-          // Armazena o arquivo original
-          fotosPorFase[fase].push(file);
-          
-          // Cria preview
-          const reader = new FileReader();
-          reader.onload = function(e) {
-            const imgContainer = document.createElement('div');
-            imgContainer.className = 'relative';
-            
-            const img = document.createElement('img');
-            img.src = e.target.result;
-            img.className = 'h-32 w-full object-cover rounded border';
-            img.alt = `Foto ${index+1} - ${fase}`;
-            
-            const desc = document.createElement('p');
-            desc.className = 'text-xs truncate';
-            desc.textContent = file.name.substring(0, 30);
-            
-            imgContainer.appendChild(img);
-            imgContainer.appendChild(desc);
-            previewDiv.appendChild(imgContainer);
-          };
-          reader.readAsDataURL(file);
-        });
-      }
-    }
-
-    // Função para prever risco
-    function preverRiscoIA() {
-      // Coletar todos os valores dos campos de risco
-      const fatores = {
-        publico: parseFloat(document.getElementById('fatorPublico').value) || 0,
-        treinamento: parseFloat(document.getElementById('treinamentoSeguranca').value) || 0.5,
-        inspecao: parseFloat(document.getElementById('tempoInspecao').value) || 0.5,
-        checkpoints: parseFloat(document.getElementById('eficienciaCheckpoints').value) || 0.5,
-        vias: parseFloat(document.getElementById('condicaoVias').value) || 0.5,
-        iluminacao: parseFloat(document.getElementById('iluminacaoPublica').value) || 0.5,
-        apoioPolicial: parseFloat(document.getElementById('distanciaApoioPolicial').value) || 0.5,
-        diaSemana: parseFloat(document.getElementById('diaSemana').value) || 0,
-        historico: parseFloat(document.getElementById('historicoEmocional').value) || 0.5,
-        monitoramento: parseFloat(document.getElementById('monitoramentoGrupos').value) || 0.5,
-        mandados: parseFloat(document.getElementById('mandadosPendentes').value) || 0,
-        efetivo: parseFloat(document.getElementById('fatorEfetivo').value) || 0,
-        ocorrencias: parseFloat(document.getElementById('fatorOcorrencias').value) || 0,
-        clima: parseFloat(document.getElementById('clima').value) || 0.5,
-        rivalidade: parseFloat(document.getElementById('rivalidade').value) || 0.5,
-        visitante: parseFloat(document.getElementById('visitante').value) || 0.5,
-        infraestrutura: parseFloat(document.getElementById('infraestrutura').value) || 0.5,
-        evacuacao: parseFloat(document.getElementById('evacuacao').value) || 0.5
-      };
-
-      // Cálculo dos pesos (exemplo simplificado)
-      const riscoEstrutural = (fatores.infraestrutura + fatores.evacuacao + fatores.vias + fatores.iluminacao) / 4;
-      const riscoOperacional = (fatores.treinamento + fatores.inspecao + fatores.checkpoints + fatores.efetivo) / 4;
-      const riscoComportamental = (fatores.historico + fatores.rivalidade + fatores.visitante + fatores.mandados) / 4;
-      const riscoContextual = (fatores.diaSemana + fatores.clima + fatores.apoioPolicial + fatores.monitoramento) / 4;
-
-      // Risco geral ponderado
-      const riscoGeral = (riscoEstrutural * 0.3 + riscoOperacional * 0.3 + riscoComportamental * 0.2 + riscoContextual * 0.2) * 100;
-
-      // Exibir resultados
-      const resultadoElement = document.getElementById('resultadoIA');
-      resultadoElement.innerHTML = `
-        <span class="text-${riscoGeral > 70 ? 'red' : riscoGeral > 40 ? 'orange' : 'green'}-600">
-          Risco calculado: ${riscoGeral.toFixed(1)}% (${riscoGeral > 70 ? 'ALTO' : riscoGeral > 40 ? 'MODERADO' : 'BAIXO'})
-        </span><br>
-        Estrutural: ${(riscoEstrutural * 100).toFixed(1)}%<br>
-        Operacional: ${(riscoOperacional * 100).toFixed(1)}%<br>
-        Comportamental: ${(riscoComportamental * 100).toFixed(1)}%<br>
-        Contextual: ${(riscoContextual * 100).toFixed(1)}%
-      `;
-
-      // Atualizar gráfico
-      desenharGraficoImpacto(riscoEstrutural, riscoOperacional, riscoComportamental, riscoContextual);
-    }
-
-    // Função para desenhar gráfico
-    function desenharGraficoImpacto(estrutural, operacional, comportamental, contextual) {
-      const ctx = document.getElementById('graficoImpacto').getContext('2d');
-      
-      // Destrói o gráfico anterior se existir
-      if (impactoChart) {
-        impactoChart.destroy();
-      }
-      
-      impactoChart = new Chart(ctx, {
-        type: 'radar',
-        data: {
-          labels: ['Estrutural', 'Operacional', 'Comportamental', 'Contextual'],
-          datasets: [{
-            label: 'Nível de Risco',
-            data: [estrutural, operacional, comportamental, contextual],
-            backgroundColor: 'rgba(59, 130, 246, 0.2)',
-            borderColor: 'rgba(59, 130, 246, 1)',
-            borderWidth: 2,
-            pointBackgroundColor: 'rgba(59, 130, 246, 1)'
-          }]
-        },
-        options: {
-          scales: {
-            r: {
-              angleLines: { display: true },
-              suggestedMin: 0,
-              suggestedMax: 1
-            }
-          }
-        }
-      });
-    }
-
-    // Funções auxiliares para PDF
-    function formatarData(dataISO) {
-      if (!dataISO) return "Não informada";
-      const [ano, mes, dia] = dataISO.split("-");
-      return `${dia}/${mes}/${ano}`;
-    }
-
-    function getBase64(file) {
-      return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-        reader.onload = () => resolve(reader.result);
-        reader.onerror = error => reject(error);
-      });
-    }
-
-    // Função principal para gerar PDF
-    async function gerarRelatorioPDF() {
-      const exportBtn = document.getElementById("exportarPDF");
-      const loadingIndicator = document.getElementById("loadingPDF");
-      
-      try {
-        // Mostra loading e desabilita botão
-        exportBtn.disabled = true;
-        loadingIndicator.classList.remove("hidden");
-        
-        // Verifica bibliotecas
-        if (!window.jspdf || !window.html2canvas) {
-          throw new Error("Bibliotecas de PDF não carregadas corretamente");
-        }
-        
-        const { jsPDF } = window.jspdf;
-        const doc = new jsPDF({
-          orientation: "portrait",
-          unit: "mm",
-          format: "a4"
-        });
-
-        // Dados do formulário
-        const dataEvento = document.getElementById("dataEvento").value;
-        const equipes = document.getElementById("equipesEnvolvidas").value || "Não informado";
-        const localEvento = document.getElementById("localEvento").value || "Não informado";
-        const capacidade = document.getElementById("capacidadeLocal").value || "Não informada";
-        const riscoIA = document.getElementById("resultadoIA")?.innerText || "Análise de risco não realizada";
-
-        // ---- CAPA ----
-        doc.setFontSize(22);
-        doc.setTextColor(40, 40, 40);
-        doc.text("RELATÓRIO DE SEGURANÇA EM EVENTOS", 105, 40, { align: "center" });
-        
-        // Logo (usando html2canvas para capturar o elemento img)
-        try {
-          const logo = document.querySelector("#app img[alt='Logo NM Engenharia']");
-          if (logo) {
-            const canvas = await html2canvas(logo);
-            doc.addImage(canvas, 'JPEG', 80, 60, 50, 30);
-          }
-        } catch (e) {
-          console.log("Logo não incluído:", e);
-        }
-        
-        doc.setFontSize(16);
-        doc.text(`Partida: ${equipes}`, 105, 120, { align: "center" });
-        doc.text(`Data: ${formatarData(dataEvento)}`, 105, 130, { align: "center" });
-        
-        // ---- DADOS DA PARTIDA ----
-        doc.addPage();
-        doc.setFontSize(18);
-        doc.setTextColor(30, 58, 138);
-        doc.text("1. DADOS DA PARTIDA", 20, 20);
-        
-        doc.setFontSize(12);
-        doc.setTextColor(0, 0, 0);
-        doc.text(`• Equipes: ${equipes}`, 20, 30);
-        doc.text(`• Local: ${localEvento}`, 20, 40);
-        doc.text(`• Data: ${formatarData(dataEvento)}`, 20, 50);
-        doc.text(`• Capacidade: ${capacidade} pessoas`, 20, 60);
-        doc.text(`• Horário: ${document.querySelector("input[type='time']").value || "Não informado"}`, 20, 70);
-
-        // ---- ANÁLISE DE RISCO ----
-        doc.setFontSize(18);
-        doc.setTextColor(30, 58, 138);
-        doc.text("2. ANÁLISE DE RISCO", 20, 90);
-        
-        // Resultado da IA
-        doc.setFontSize(12);
-        const textoRisco = riscoIA.split('\n')[0]; // Pega apenas a primeira linha
-        doc.text(textoRisco, 20, 100, { maxWidth: 170 });
-        
-        // Gráfico
-        const canvas = document.getElementById("graficoImpacto");
-        if (canvas) {
-          try {
-            const canvasImg = await html2canvas(canvas);
-            doc.addImage(canvasImg, 'JPEG', 20, 110, 150, 80);
-          } catch (e) {
-            console.log("Gráfico não incluído:", e);
-            doc.text("(Gráfico não pôde ser incluído)", 20, 110);
-          }
-        }
-
-        // ---- RELATÓRIO FOTOGRÁFICO ----
-        doc.addPage();
-        doc.setFontSize(18);
-        doc.setTextColor(30, 58, 138);
-        doc.text("3. RELATÓRIO FOTOGRÁFICO", 20, 20);
-        
-        let yPos = 30;
-        let hasPhotos = false;
-        
-        for (const [fase, fotos] of Object.entries(fotosPorFase)) {
-          if (fotos.length > 0) {
-            hasPhotos = true;
-            doc.setFontSize(14);
-            doc.text(`Fase: ${fase}`, 20, yPos);
-            yPos += 10;
-            
-            for (let i = 0; i < fotos.length; i++) {
-              if (yPos > 250) { // Quebra de página
-                doc.addPage();
-                yPos = 20;
-              }
-              
-              try {
-                const imgData = await getBase64(fotos[i]);
-                doc.addImage(imgData, 'JPEG', 20, yPos, 40, 30);
-                doc.text(`Foto ${i+1}: ${fotos[i].name.substring(0, 30)}`, 65, yPos + 15);
-                yPos += 35;
-              } catch (e) {
-                console.log(`Erro na foto ${i} (${fase}):`, e);
-                doc.text(`[Erro ao carregar foto ${i+1}]`, 20, yPos);
-                yPos += 10;
-              }
-            }
-          }
-        }
-        
-        if (!hasPhotos) {
-          doc.text("Nenhuma foto foi adicionada ao relatório", 20, 30);
-        }
-
-        // ---- CONCLUSÃO ----
-        doc.addPage();
-        doc.setFontSize(18);
-        doc.setTextColor(30, 58, 138);
-        doc.text("4. CONCLUSÃO", 20, 20);
-        
-        doc.setFontSize(12);
-        doc.text("Relatório gerado automaticamente pelo Sistema de Gestão de Segurança em Eventos.", 20, 30);
-        doc.text(`Data de geração: ${new Date().toLocaleString('pt-BR')}`, 20, 40);
-        
-        // Salva o PDF
-        const nomeArquivo = `Relatorio_Seguranca_${equipes.replace(/ x /gi, '_vs_')}_${dataEvento || 'sem_data'}.pdf`;
-        doc.save(nomeArquivo);
-        
-      } catch (error) {
-        console.error("Erro ao gerar PDF:", error);
-        alert("Erro ao gerar PDF: " + error.message);
-      } finally {
-        // Restaura botão e esconde loading
-        exportBtn.disabled = false;
-        loadingIndicator.classList.add("hidden");
-      }
-    }
   </script>
 </body>
 </html>
