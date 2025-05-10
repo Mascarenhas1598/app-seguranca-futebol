@@ -78,7 +78,46 @@
     <section class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg">
       <h2 class="text-xl font-bold mb-4 dark:text-white">Cadastro da Partida</h2>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <!-- Campos do cadastro mantidos -->
+        <div>
+          <label class="block text-sm font-medium mb-2 dark:text-gray-300">Data do Evento</label>
+          <input type="date" id="dataEvento" required
+                 class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600">
+        </div>
+        
+        <div>
+          <label class="block text-sm font-medium mb-2 dark:text-gray-300">Horário</label>
+          <input type="time" id="horarioEvento" required
+                 class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600">
+        </div>
+        
+        <div class="md:col-span-2">
+          <label class="block text-sm font-medium mb-2 dark:text-gray-300">Equipes Envolvidas</label>
+          <input type="text" id="equipesEnvolvidas" required
+                 class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600"
+                 placeholder="Ex: Time A vs Time B">
+        </div>
+        
+        <div>
+          <label class="block text-sm font-medium mb-2 dark:text-gray-300">Local do Evento</label>
+          <input type="text" id="localEvento" required
+                 class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600"
+                 placeholder="Estádio ou localização">
+        </div>
+        
+        <div>
+          <label class="block text-sm font-medium mb-2 dark:text-gray-300">Capacidade Máxima</label>
+          <input type="number" id="capacidadeLocal" min="0" required
+                 class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600"
+                 placeholder="Número total de lugares">
+        </div>
+        
+        <div class="md:col-span-2">
+          <label class="block text-sm font-medium mb-2 dark:text-gray-300">Informações Adicionais</label>
+          <textarea id="informacoesAdicionais"
+                    class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600"
+                    rows="3"
+                    placeholder="Detalhes relevantes sobre a partida"></textarea>
+        </div>
       </div>
     </section>
 
@@ -95,7 +134,7 @@
       <h2 class="text-xl font-bold mb-4 dark:text-white">Análise Preditiva de Risco</h2>
       
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <!-- Variáveis de risco mantidas -->
+        <!-- Lista de variáveis de risco mantida -->
       </div>
 
       <button onclick="calcularRiscoLogistico()" 
@@ -105,7 +144,7 @@
 
       <!-- Resultados da Análise -->
       <div id="resultadoRegressao" class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
-        <!-- Componentes de resultado mantidos -->
+        <!-- Componentes de resultados mantidos -->
       </div>
     </section>
   </div>
@@ -113,6 +152,7 @@
   <script>
     'use strict';
 
+    // Configuração do Modelo Preditivo
     const modeloLogistico = {
       intercepto: -2.7,
       coeficientes: {
@@ -138,7 +178,7 @@
       }
     };
 
-    // Funções auxiliares
+    // Funções de Interface
     const toggleTheme = () => {
       const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
       const newTheme = isDark ? 'light' : 'dark';
@@ -151,7 +191,26 @@
       input.type = input.type === 'password' ? 'text' : 'password';
     };
 
-    // Validação de inputs
+    // Validação de Login
+    const validarLogin = () => {
+      const usuario = document.getElementById('usuario').value;
+      const senha = document.getElementById('senha').value;
+
+      if (!usuario.trim() || !senha.trim()) {
+        alert('Por favor, preencha todos os campos!');
+        return false;
+      }
+
+      // Credenciais temporárias para teste
+      if (usuario !== 'admin' || senha !== 'admin123') {
+        alert('Credenciais inválidas!');
+        return false;
+      }
+
+      return true;
+    };
+
+    // Validação de Inputs de Risco
     document.querySelectorAll('.risk-variable input').forEach(input => {
       input.addEventListener('input', function() {
         let value = Math.min(1, Math.max(0, parseFloat(this.value) || 0);
@@ -159,7 +218,7 @@
       });
     });
 
-    // Cálculo principal
+    // Cálculo do Risco
     const calcularRiscoLogistico = () => {
       const inputs = Array.from(document.querySelectorAll('.risk-variable'));
       let isValid = true;
@@ -168,14 +227,14 @@
         const input = inputEl.querySelector('input');
         const value = parseFloat(input.value);
         
-        if (isNaN(value) || value < 0 || value > 1) {
+        if (isNaN(value) {
           input.classList.add('border-red-500', 'animate-shake');
           setTimeout(() => input.classList.remove('border-red-500', 'animate-shake'), 1000);
           isValid = false;
         }
       });
 
-      if (!isValid) return alert('Por favor, preencha todos os campos com valores entre 0 e 1');
+      if (!isValid) return alert('Preencha todos os campos com valores entre 0 e 1');
 
       const { valores, detalhes } = inputs.reduce((acc, el) => {
         const label = el.querySelector('label').textContent.match(/[\wÀ-ú]+/)[0].toLowerCase();
@@ -199,7 +258,7 @@
       atualizarGraficoContribuicoes(detalhes);
     };
 
-    // Atualizações da UI
+    // Atualização da Interface
     const atualizarVisualizacaoRisco = (probabilidade, detalhes) => {
       const riskColor = probabilidade > 70 ? 'red' : probabilidade > 40 ? 'orange' : 'green';
       const riskLabels = {
@@ -222,7 +281,7 @@
       document.getElementById('riscoPercentual').textContent = `${probabilidade.toFixed(1)}%`;
     };
 
-    // Configuração do gráfico
+    // Configuração do Gráfico
     let riskChart = null;
     const atualizarGraficoContribuicoes = (detalhes) => {
       const ctx = document.getElementById('riskFactorsChart').getContext('2d');
@@ -296,8 +355,13 @@
     // Event Listeners
     document.getElementById('loginForm').addEventListener('submit', (e) => {
       e.preventDefault();
-      document.getElementById('login-screen').classList.add('hidden');
-      document.getElementById('main-interface').classList.remove('hidden');
+      if (validarLogin()) {
+        document.getElementById('login-screen').classList.add('hidden');
+        document.getElementById('main-interface').classList.remove('hidden');
+        setTimeout(() => {
+          if (riskChart) riskChart.resize();
+        }, 100);
+      }
     });
 
     // Inicialização
