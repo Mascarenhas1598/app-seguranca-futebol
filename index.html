@@ -76,7 +76,46 @@
     <section class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg">
       <h2 class="text-xl font-bold mb-4 dark:text-white">Cadastro da Partida</h2>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <!-- Campos do cadastro mantidos -->
+        <div>
+          <label class="block text-sm font-medium mb-2 dark:text-gray-300">Data do Evento</label>
+          <input type="date" id="dataEvento" required
+                 class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600">
+        </div>
+        
+        <div>
+          <label class="block text-sm font-medium mb-2 dark:text-gray-300">Horário</label>
+          <input type="time" id="horarioEvento" required
+                 class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600">
+        </div>
+        
+        <div class="md:col-span-2">
+          <label class="block text-sm font-medium mb-2 dark:text-gray-300">Equipes Envolvidas</label>
+          <input type="text" id="equipesEnvolvidas" required
+                 class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600"
+                 placeholder="Ex: Time A vs Time B">
+        </div>
+        
+        <div>
+          <label class="block text-sm font-medium mb-2 dark:text-gray-300">Local do Evento</label>
+          <input type="text" id="localEvento" required
+                 class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600"
+                 placeholder="Estádio ou localização">
+        </div>
+        
+        <div>
+          <label class="block text-sm font-medium mb-2 dark:text-gray-300">Capacidade Máxima</label>
+          <input type="number" id="capacidadeLocal" min="0" required
+                 class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600"
+                 placeholder="Número total de lugares">
+        </div>
+        
+        <div class="md:col-span-2">
+          <label class="block text-sm font-medium mb-2 dark:text-gray-300">Informações Adicionais</label>
+          <textarea id="informacoesAdicionais"
+                    class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600"
+                    rows="3"
+                    placeholder="Detalhes relevantes sobre a partida"></textarea>
+        </div>
       </div>
     </section>
 
@@ -93,7 +132,75 @@
       <h2 class="text-xl font-bold mb-4 dark:text-white">Análise Preditiva de Risco</h2>
       
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <!-- Variáveis de risco mantidas -->
+        <div class="risk-variable" data-weight="0.18">
+          <label class="block font-semibold dark:text-gray-300">Histórico de Confrontos<br>
+            <span class="text-sm font-normal">(0=sem rivalidade, 1=clássico histórico)</span>
+          </label>
+          <input type="number" min="0" max="1" step="0.1" class="w-full p-2 border rounded dark:bg-gray-700">
+        </div>
+
+        <div class="risk-variable" data-weight="0.15">
+          <label class="block font-semibold dark:text-gray-300">Condições Climáticas<br>
+            <span class="text-sm font-normal">(0=clima ideal, 1=condições extremas)</span>
+          </label>
+          <input type="number" min="0" max="1" step="0.1" class="w-full p-2 border rounded dark:bg-gray-700">
+        </div>
+
+        <div class="risk-variable" data-weight="0.14">
+          <label class="block font-semibold dark:text-gray-300">Rivalidade entre Equipes<br>
+            <span class="text-sm font-normal">(0=amistoso, 1=rivalidade extrema)</span>
+          </label>
+          <input type="number" min="0" max="1" step="0.1" class="w-full p-2 border rounded dark:bg-gray-700">
+        </div>
+
+        <div class="risk-variable" data-weight="0.12">
+          <label class="block font-semibold dark:text-gray-300">Conflitos entre Torcidas<br>
+            <span class="text-sm font-normal">(0=nenhum histórico, 1=conflitos recentes)</span>
+          </label>
+          <input type="number" min="0" max="1" step="0.1" class="w-full p-2 border rounded dark:bg-gray-700">
+        </div>
+
+        <div class="risk-variable" data-weight="0.11">
+          <label class="block font-semibold dark:text-gray-300">Público Estimado<br>
+            <span class="text-sm font-normal">(0=estádio vazio, 1=capacidade total)</span>
+          </label>
+          <input type="number" min="0" max="1" step="0.1" class="w-full p-2 border rounded dark:bg-gray-700">
+        </div>
+
+        <div class="risk-variable" data-weight="0.10">
+          <label class="block font-semibold dark:text-gray-300">Histórico de Incidentes<br>
+            <span class="text-sm font-normal">(0=nenhum incidente, 1=múltiplos incidentes)</span>
+          </label>
+          <input type="number" min="0" max="1" step="0.1" class="w-full p-2 border rounded dark:bg-gray-700">
+        </div>
+
+        <div class="risk-variable" data-weight="0.09">
+          <label class="block font-semibold dark:text-gray-300">Capacidade do Estádio<br>
+            <span class="text-sm font-normal">(0=baixa capacidade, 1=alta capacidade)</span>
+          </label>
+          <input type="number" min="0" max="1" step="0.1" class="w-full p-2 border rounded dark:bg-gray-700">
+        </div>
+
+        <div class="risk-variable" data-weight="0.07">
+          <label class="block font-semibold dark:text-gray-300">Risco de Rebaixamento<br>
+            <span class="text-sm font-normal">(0=nenhum risco, 1=rebaixamento iminente)</span>
+          </label>
+          <input type="number" min="0" max="1" step="0.1" class="w-full p-2 border rounded dark:bg-gray-700">
+        </div>
+
+        <div class="risk-variable" data-weight="0.06">
+          <label class="block font-semibold dark:text-gray-300">Infraestrutura de Transporte<br>
+            <span class="text-sm font-normal">(0=adequada, 1=precária)</span>
+          </label>
+          <input type="number" min="0" max="1" step="0.1" class="w-full p-2 border rounded dark:bg-gray-700">
+        </div>
+
+        <div class="risk-variable" data-weight="0.05">
+          <label class="block font-semibold dark:text-gray-300">Sentimento nas Redes Sociais<br>
+            <span class="text-sm font-normal">(0=positivo, 1=negativo)</span>
+          </label>
+          <input type="number" min="0" max="1" step="0.1" class="w-full p-2 border rounded dark:bg-gray-700">
+        </div>
       </div>
 
       <button onclick="calcularRiscoLogistico()" 
@@ -101,7 +208,7 @@
         Calcular Risco Preditivo
       </button>
 
-      <!-- Resultados da Análise -->
+      <!-- Resultados da Análise (Melhorias) -->
       <div id="resultadoRegressao" class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
         <div class="p-6 rounded-xl shadow-lg bg-white dark:bg-gray-800">
           <h3 class="text-lg font-bold mb-4 dark:text-white">Detalhamento do Risco</h3>
