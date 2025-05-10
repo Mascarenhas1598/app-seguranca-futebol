@@ -67,6 +67,53 @@
       </div>
     </header>
 
+<!-- Seção: Cadastro da Partida -->
+    <section class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg">
+        <h2 class="text-xl font-bold mb-4 dark:text-white">Cadastro da Partida</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+                <label class="block text-sm font-medium mb-2 dark:text-gray-300">Data do Evento</label>
+                <input type="date" id="dataEvento" required
+                       class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600">
+            </div>
+            
+            <div>
+                <label class="block text-sm font-medium mb-2 dark:text-gray-300">Horário</label>
+                <input type="time" id="horarioEvento" required
+                       class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600">
+            </div>
+            
+            <div class="md:col-span-2">
+                <label class="block text-sm font-medium mb-2 dark:text-gray-300">Equipes Envolvidas</label>
+                <input type="text" id="equipesEnvolvidas" required
+                       class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600"
+                       placeholder="Ex: Time A vs Time B">
+            </div>
+            
+            <div>
+                <label class="block text-sm font-medium mb-2 dark:text-gray-300">Local do Evento</label>
+                <input type="text" id="localEvento" required
+                       class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600"
+                       placeholder="Estádio ou localização">
+            </div>
+            
+            <div>
+                <label class="block text-sm font-medium mb-2 dark:text-gray-300">Capacidade Máxima</label>
+                <input type="number" id="capacidadeLocal" min="0" required
+                       class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600"
+                       placeholder="Número total de lugares">
+            </div>
+            
+            <div class="md:col-span-2">
+                <label class="block text-sm font-medium mb-2 dark:text-gray-300">Informações Adicionais</label>
+                <textarea id="informacoesAdicionais"
+                          class="w-full p-2 border rounded dark:bg-gray-700 dark:border-gray-600"
+                          rows="3"
+                          placeholder="Detalhes relevantes sobre a partida"></textarea>
+            </div>
+        </div>
+    </section>
+
     <!-- Seção de Análise de Risco Atualizada -->
     <section class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg">
       <div class="mb-4 p-4 bg-blue-50 border-l-4 border-blue-400 text-sm text-blue-700 dark:bg-blue-900 dark:text-blue-200">
@@ -250,6 +297,7 @@
 
     // Inicialização
     document.documentElement.setAttribute('data-theme', localStorage.getItem('themePreference') || 'light');
+
   </script>
 </body>
 </html>
