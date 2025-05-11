@@ -3,180 +3,253 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sistema de Segurança em Eventos Esportivos</title>
+  <title>App Segurança em Eventos - NM Engenharia</title>
   
   <!-- Dependências -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@3.18.0/dist/tf.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 
   <style>
-    @keyframes shake { 
-      0%, 100% { transform: translateX(0); } 
-      25% { transform: translateX(-5px); } 
-      75% { transform: translateX(5px); } 
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
     }
-    .animate-shake { animation: shake 0.4s ease-in-out; }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-5px); }
+      75% { transform: translateX(5px); }
+    }
+
+    .risk-indicator {
+      transition: all 0.3s ease;
+    }
   </style>
 </head>
-<body class="bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-200">
-  <!-- Tela de Login -->
-  <div id="login-screen" class="max-w-md mx-auto pt-20 px-4">
-    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl p-8 transition-all">
-      <form id="loginForm" class="space-y-6">
-        <img src="/images/logo_nm_engenharia.jpg" 
-             alt="NM Engenharia" 
-             class="w-40 h-40 mx-auto mb-8 object-contain"
-             onerror="this.onerror=null;this.src='/images/placeholder-logo.png';this.classList.add('border','p-2')">
-        
-        <div>
-          <label for="usuario" class="block text-sm font-medium mb-2 dark:text-gray-300">Usuário</label>
-          <input type="text" id="usuario" required
-                 class="w-full px-4 py-2 rounded-lg border focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 transition-all">
-        </div>
-
-        <div class="relative">
-          <label for="senha" class="block text-sm font-medium mb-2 dark:text-gray-300">Senha</label>
-          <input type="password" id="senha" required
-                 class="w-full px-4 py-2 rounded-lg border focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 transition-all">
-          <button type="button" class="absolute right-3 bottom-2.5 text-gray-500 dark:text-gray-400 hover:text-blue-600 transition-colors" 
-                  onclick="togglePasswordVisibility(event)" aria-label="Mostrar senha">👁️</button>
-        </div>
-
-        <button type="submit" 
-                class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 px-5 rounded-lg transition-colors duration-200">
-          Acessar Sistema
-        </button>
-      </form>
-    </div>
-  </div>
-
-  <!-- Interface Principal -->
-  <div id="main-interface" class="hidden max-w-6xl mx-auto p-6 space-y-10">
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-      <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg">
-        <h2 class="text-xl font-bold mb-4">Mapa de Riscos</h2>
-        <canvas id="riskChartCanvas"></canvas>
-      </div>
-      
-      <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg space-y-6">
-        <h2 class="text-xl font-bold">Parâmetros de Risco</h2>
-        <div class="grid grid-cols-2 gap-4">
-          <div class="risk-variable">
-            <label class="block text-sm mb-1">Histórico de Incidentes</label>
-            <input type="number" step="0.1" min="0" max="1" class="w-full px-3 py-2 border rounded-lg">
+<body class="bg-gray-100 dark:bg-gray-900">
+  <div id="app-container" class="min-h-screen">
+    <!-- Tela de Login -->
+    <div id="login-screen" class="max-w-md mx-auto pt-20 px-4">
+      <div class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl p-8 transition-all">
+        <form id="loginForm" class="space-y-6">
+          <img src="/images/logo_nm_engenharia.jpg" 
+               alt="NM Engenharia" 
+               class="w-40 h-40 mx-auto mb-8 object-contain"
+               onerror="this.onerror=null;this.src='/images/placeholder-logo.png';this.classList.add('border', 'p-2')">
+          
+          <div>
+            <label class="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300 required-field">Usuário</label>
+            <input type="text" required
+                   class="w-full px-4 py-2 rounded-lg border focus:ring-2 focus:ring-blue-500
+                          dark:bg-gray-700 dark:border-gray-600 transition-all">
           </div>
-          <!-- Adicione mais inputs de parâmetros aqui -->
+
+          <div class="relative">
+            <label class="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300 required-field">Senha</label>
+            <input type="password" required
+                   class="w-full px-4 py-2 rounded-lg border focus:ring-2 focus:ring-blue-500
+                          dark:bg-gray-700 dark:border-gray-600 transition-all">
+            <button type="button" class="absolute right-3 bottom-2.5 text-gray-500 dark:text-gray-400
+                    hover:text-blue-600 transition-colors" onclick="togglePasswordVisibility(this)">
+              👁️
+            </button>
+          </div>
+
+          <button type="submit" 
+                  class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 px-5
+                         rounded-lg transition-colors duration-200">
+            Acessar Sistema
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Interface Principal (oculta inicialmente) -->
+    <div id="main-interface" class="hidden max-w-7xl mx-auto px-4 py-8">
+      <!-- Cabeçalho -->
+      <header class="flex items-center justify-between mb-12">
+        <div class="flex items-center space-x-4">
+          <img src="/images/logo_nm_engenharia.jpg" 
+               alt="NM Engenharia" 
+               class="w-16 h-16 object-contain"
+               onerror="this.style.display='none'">
+          <h1 class="text-2xl font-bold dark:text-white">Análise de Risco em Tempo Real</h1>
         </div>
-        <button class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg transition-colors">
-          Calcular Risco
+        
+        <div class="flex items-center space-x-4">
+          <button onclick="toggleTheme()" 
+                  class="p-2 rounded-lg bg-gray-200 dark:bg-gray-700 hover:bg-gray-300
+                         dark:hover:bg-gray-600 transition-colors">
+            🌓 Tema
+          </button>
+        </div>
+      </header>
+
+      <!-- Seção de Análise -->
+      <section class="bg-white dark:bg-gray-800 p-8 rounded-xl shadow-lg mb-8">
+        <h2 class="text-xl font-bold mb-6 dark:text-white">Parâmetros de Análise</h2>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label class="block text-sm font-medium mb-2">Público Esperado</label>
+            <input type="number" id="audience" min="0" max="50000" 
+                   class="w-full px-4 py-2 rounded-lg border focus:ring-2 focus:ring-blue-500
+                          dark:bg-gray-700 dark:border-gray-600 transition-all">
+          </div>
+          
+          <div>
+            <label class="block text-sm font-medium mb-2">Nível de Treinamento</label>
+            <input type="range" id="training" min="0" max="1" step="0.1" 
+                   class="w-full range-slider">
+          </div>
+        </div>
+
+        <button onclick="analyzeRisk()"
+                class="mt-6 w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3
+                       px-6 rounded-lg transition-colors duration-200">
+          Calcular Risco com IA
         </button>
+      </section>
+
+      <!-- Resultados -->
+      <div id="results-section" class="bg-white dark:bg-gray-800 p-8 rounded-xl shadow-lg">
+        <div class="flex items-center justify-between mb-6">
+          <h3 class="text-lg font-bold dark:text-white">Resultado da Análise</h3>
+          <span class="text-sm text-gray-500" id="last-update"></span>
+        </div>
+        
+        <div id="risk-value" class="text-5xl font-bold text-center risk-indicator">-</div>
+        
+        <div class="mt-6 grid grid-cols-2 gap-4 text-sm">
+          <div class="bg-blue-50 dark:bg-gray-700 p-4 rounded-lg">
+            <span class="block text-gray-600 dark:text-gray-300 mb-1">Risco Base</span>
+            <span id="base-risk" class="font-medium">-</span>
+          </div>
+          
+          <div class="bg-green-50 dark:bg-gray-700 p-4 rounded-lg">
+            <span class="block text-gray-600 dark:text-gray-300 mb-1">Ajustes Externos</span>
+            <span id="external-adjustments" class="font-medium">-</span>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 
   <script>
-    'use strict';
-
-    let riskChart = null;
-
-    const modeloLogistico = {
-      intercepto: -2.7,
-      coeficientes: {
-        historico: 0.18,
-        clima: 0.15,
-        rivalidade: 0.14,
-        conflitos: 0.12,
-        publico: 0.11,
-        incidentes: 0.10,
-        capacidade: 0.09,
-        rebaixamento: 0.07,
-        transporte: 0.06,
-        redesSociais: 0.05
-      },
-      calcularLogit(valores) {
-        return Object.entries(valores).reduce(
-          (acc, [variavel, valor]) => acc + (valor * this.coeficientes[variavel]),
-          this.intercepto
-        );
-      },
-      calcularProbabilidade(logit) {
-        return (1 / (1 + Math.exp(-logit))) * 100;
+    class RiskAnalyzer {
+      constructor() {
+        this.model = null;
+        this.initModel();
       }
-    };
 
-    const inicializarGrafico = () => {
-      const ctx = document.getElementById('riskChartCanvas').getContext('2d');
-      if (riskChart) riskChart.destroy();
-      
-      riskChart = new Chart(ctx, {
-        type: 'radar',
-        data: {
-          labels: Object.keys(modeloLogistico.coeficientes),
-          datasets: [{
-            label: 'Fatores de Risco',
-            data: Object.values(modeloLogistico.coeficientes).map(v => v * 10),
-            backgroundColor: 'rgba(54, 162, 235, 0.2)',
-            borderColor: 'rgba(54, 162, 235, 1)'
-          }]
-        },
-        options: {
-          scales: {
-            r: {
-              beginAtZero: true,
-              max: 2
-            }
-          }
+      async initModel() {
+        try {
+          this.model = await tf.loadLayersModel('indexeddb://risk-model');
+        } catch {
+          this.model = this.createNewModel();
         }
-      });
-    };
+      }
 
-    const toggleTheme = () => {
+      createNewModel() {
+        const model = tf.sequential({
+          layers: [
+            tf.layers.dense({ units: 8, inputShape: [2], activation: 'relu' }),
+            tf.layers.dense({ units: 1, activation: 'sigmoid' })
+          ]
+        });
+
+        model.compile({
+          optimizer: tf.train.adam(0.01),
+          loss: 'meanSquaredError'
+        });
+
+        return model;
+      }
+
+      async calculateRisk(factors) {
+        const tensor = tf.tensor2d([[
+          factors.audience / 50000,
+          factors.training
+        ]]);
+        
+        const prediction = this.model.predict(tensor);
+        const risk = (await prediction.data())[0] * 100;
+        tf.dispose([tensor, prediction]);
+        
+        return risk;
+      }
+    }
+
+    const riskAnalyzer = new RiskAnalyzer();
+
+    // Controles de Interface
+    function toggleTheme() {
       const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
       document.documentElement.setAttribute('data-theme', isDark ? 'light' : 'dark');
       localStorage.setItem('themePreference', isDark ? 'light' : 'dark');
-    };
+    }
 
-    const togglePasswordVisibility = (event) => {
-      event.preventDefault();
-      const input = document.getElementById('senha');
+    function togglePasswordVisibility(button) {
+      const input = button.previousElementSibling;
       input.type = input.type === 'password' ? 'text' : 'password';
-    };
+    }
 
-    const validarLogin = () => {
-      const usuario = document.getElementById('usuario').value.trim();
-      const senha = document.getElementById('senha').value.trim();
+    function showNotification(message, type = 'info') {
+      const types = {
+        info: 'bg-blue-100 text-blue-700',
+        success: 'bg-green-100 text-green-700',
+        error: 'bg-red-100 text-red-700'
+      };
 
-      if (!usuario || !senha) {
-        alert('Por favor, preencha todos os campos!');
-        return false;
+      const notification = document.createElement('div');
+      notification.className = `fixed bottom-4 right-4 p-4 rounded-lg shadow-lg ${types[type]} animate-slide-in`;
+      notification.textContent = message;
+      
+      document.body.appendChild(notification);
+      setTimeout(() => notification.remove(), 5000);
+    }
+
+    async function analyzeRisk() {
+      try {
+        const factors = {
+          audience: Number(document.getElementById('audience').value),
+          training: Number(document.getElementById('training').value)
+        };
+
+        const risk = await riskAnalyzer.calculateRisk(factors);
+        
+        document.getElementById('risk-value').textContent = `${risk.toFixed(1)}%`;
+        document.getElementById('last-update').textContent = new Date().toLocaleTimeString();
+        showNotification(`Análise concluída: ${risk.toFixed(1)}% de risco`, 'success');
+      } catch (error) {
+        showNotification('Erro na análise. Verifique os dados.', 'error');
+        console.error(error);
       }
+    }
 
-      if (usuario !== 'admin' || senha !== 'admin123') {
-        alert('Credenciais inválidas! Use: admin / admin123');
-        return false;
-      }
+    // Inicialização
+    document.addEventListener('DOMContentLoaded', () => {
+      // Verificar tema salvo
+      const savedTheme = localStorage.getItem('themePreference') || 'light';
+      document.documentElement.setAttribute('data-theme', savedTheme);
 
-      return true;
-    };
-
-    document.getElementById('loginForm').addEventListener('submit', (e) => {
-      e.preventDefault();
-      if (validarLogin()) {
+      // Gerenciar login
+      document.getElementById('loginForm').addEventListener('submit', (e) => {
+        e.preventDefault();
         document.getElementById('login-screen').classList.add('hidden');
         document.getElementById('main-interface').classList.remove('hidden');
-        inicializarGrafico();
-      }
-    });
+      });
 
-    document.documentElement.setAttribute('data-theme', 
-      localStorage.getItem('themePreference') || 'light');
-
-    window.addEventListener('error', (e) => {
-      console.error('Erro global:', e.error);
-      alert(`Erro no sistema: ${e.message}`);
+      // Verificar carregamento da logo
+      document.querySelectorAll('img').forEach(img => {
+        img.addEventListener('error', () => {
+          console.warn('Erro ao carregar imagem:', img.src);
+          img.src = '/images/placeholder-logo.png';
+          img.classList.add('border', 'border-gray-200');
+        });
+      });
     });
   </script>
 </body>
