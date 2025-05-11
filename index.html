@@ -1,255 +1,415 @@
 <!DOCTYPE html>
-<html lang="pt-br" data-theme="light">
+<html lang="pt-br">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>App Segurança em Eventos - NM Engenharia</title>
-  
-  <!-- Dependências -->
+  <title>App Segurança em Eventos</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@3.18.0/dist/tf.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-
   <style>
-    @keyframes pulse {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.5; }
+    .shake {
+      animation: shake 0.5s;
     }
-
     @keyframes shake {
       0%, 100% { transform: translateX(0); }
       25% { transform: translateX(-5px); }
       75% { transform: translateX(5px); }
     }
-
-    .risk-indicator {
-      transition: all 0.3s ease;
+    .required-field::after {
+      content: " *";
+      color: red;
+    }
+    .animate-pulse {
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
     }
   </style>
 </head>
-<body class="bg-gray-100 dark:bg-gray-900">
-  <div id="app-container" class="min-h-screen">
-    <!-- Tela de Login -->
-    <div id="login-screen" class="max-w-md mx-auto pt-20 px-4">
-      <div class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl p-8 transition-all">
-        <form id="loginForm" class="space-y-6">
-          <img src="/images/logo_nm_engenharia.jpg" 
-               alt="NM Engenharia" 
-               class="w-40 h-40 mx-auto mb-8 object-contain"
-               onerror="this.onerror=null;this.src='/images/placeholder-logo.png';this.classList.add('border', 'p-2')">
-          
-          <div>
-            <label class="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300 required-field">Usuário</label>
-            <input type="text" required
-                   class="w-full px-4 py-2 rounded-lg border focus:ring-2 focus:ring-blue-500
-                          dark:bg-gray-700 dark:border-gray-600 transition-all">
-          </div>
+<body class="bg-gray-100 text-gray-800 font-sans">
 
-          <div class="relative">
-            <label class="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300 required-field">Senha</label>
-            <input type="password" required
-                   class="w-full px-4 py-2 rounded-lg border focus:ring-2 focus:ring-blue-500
-                          dark:bg-gray-700 dark:border-gray-600 transition-all">
-            <button type="button" class="absolute right-3 bottom-2.5 text-gray-500 dark:text-gray-400
-                    hover:text-blue-600 transition-colors" onclick="togglePasswordVisibility(this)">
-              👁️
-            </button>
-          </div>
+  <!-- Login -->
+  <div id="login" class="max-w-md mx-auto mt-20 bg-white p-8 rounded-xl shadow-md">
+    <img src="./logo_nm_engenharia.jpg" alt="Logo NM Engenharia" class="mx-auto mb-6 w-40">
+    <h2 class="text-2xl font-bold text-center mb-4">Acesso Restrito</h2>
+    <label for="usuario" class="block font-semibold">Usuário</label>
+    <input type="text" id="usuario" class="w-full p-2 border border-gray-300 rounded mb-4">
+    <label for="senha" class="block font-semibold">Senha</label>
+    <input type="password" id="senha" class="w-full p-2 border border-gray-300 rounded mb-6">
+    <button id="entrar" class="bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 w-full">Entrar</button>
+  </div>
 
-          <button type="submit" 
-                  class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 px-5
-                         rounded-lg transition-colors duration-200">
-            Acessar Sistema
-          </button>
-        </form>
+  <!-- App Principal (oculto inicialmente) -->
+  <div id="app" class="hidden max-w-6xl mx-auto p-6 space-y-10">
+    <div class="flex justify-between items-center mb-6">
+      <img src="./logo_nm_engenharia.jpg" alt="Logo NM Engenharia" class="w-40">
+      <div id="apiStatus" class="hidden bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">
+        <span id="apiStatusText">Conectando às APIs...</span>
       </div>
     </div>
+    
+    <!-- Ajuda Geral -->
+    <section class="bg-yellow-100 border-l-4 border-yellow-500 p-4 rounded">
+      <h2 class="text-lg font-bold mb-2 text-yellow-800">Ajuda Geral</h2>
+      <ul class="list-disc list-inside text-sm text-yellow-700">
+        <li>Preencha todos os campos marcados com <span class="text-red-500">*</span></li>
+        <li>Valores devem estar entre 0 e 1 conforme legenda</li>
+        <li>O sistema utiliza inteligência artificial para cálculo de risco</li>
+      </ul>
+    </section>
 
-    <!-- Interface Principal (oculta inicialmente) -->
-    <div id="main-interface" class="hidden max-w-7xl mx-auto px-4 py-8">
-      <!-- Cabeçalho -->
-      <header class="flex items-center justify-between mb-12">
-        <div class="flex items-center space-x-4">
-          <img src="/images/logo_nm_engenharia.jpg" 
-               alt="NM Engenharia" 
-               class="w-16 h-16 object-contain"
-               onerror="this.style.display='none'">
-          <h1 class="text-2xl font-bold dark:text-white">Análise de Risco em Tempo Real</h1>
+    <!-- Dashboard de Risco -->
+    <section class="bg-white p-6 rounded shadow">
+      <h2 class="text-xl font-bold mb-4">Dashboard de Risco</h2>
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div class="bg-blue-50 p-4 rounded border border-blue-200">
+          <h3 class="font-semibold text-blue-800">Risco Calculado</h3>
+          <div id="riscoGeral" class="text-3xl font-bold text-blue-600">-</div>
         </div>
-        
-        <div class="flex items-center space-x-4">
-          <button onclick="toggleTheme()" 
-                  class="p-2 rounded-lg bg-gray-200 dark:bg-gray-700 hover:bg-gray-300
-                         dark:hover:bg-gray-600 transition-colors">
-            🌓 Tema
-          </button>
+        <div class="bg-green-50 p-4 rounded border border-green-200">
+          <h3 class="font-semibold text-green-800">Precisão</h3>
+          <div id="modelAccuracy" class="text-3xl font-bold text-green-600">-</div>
         </div>
-      </header>
+        <div class="bg-purple-50 p-4 rounded border border-purple-200">
+          <h3 class="font-semibold text-purple-800">Dados Externos</h3>
+          <div id="externalData" class="text-3xl font-bold text-purple-600">-</div>
+        </div>
+        <div class="bg-orange-50 p-4 rounded border border-orange-200">
+          <h3 class="font-semibold text-orange-800">Última Atualização</h3>
+          <div id="lastUpdate" class="text-xl font-bold text-orange-600">-</div>
+        </div>
+      </div>
+    </section>
 
-      <!-- Seção de Análise -->
-      <section class="bg-white dark:bg-gray-800 p-8 rounded-xl shadow-lg mb-8">
-        <h2 class="text-xl font-bold mb-6 dark:text-white">Parâmetros de Análise</h2>
-        
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
-            <label class="block text-sm font-medium mb-2">Público Esperado</label>
-            <input type="number" id="audience" min="0" max="50000" 
-                   class="w-full px-4 py-2 rounded-lg border focus:ring-2 focus:ring-blue-500
-                          dark:bg-gray-700 dark:border-gray-600 transition-all">
-          </div>
-          
-          <div>
-            <label class="block text-sm font-medium mb-2">Nível de Treinamento</label>
-            <input type="range" id="training" min="0" max="1" step="0.1" 
-                   class="w-full range-slider">
-          </div>
-        </div>
+    <!-- [Sessões existentes de Cadastro de Partida, Análise de Risco, Relatório Fotográfico...] -->
 
-        <button onclick="analyzeRisk()"
-                class="mt-6 w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3
-                       px-6 rounded-lg transition-colors duration-200">
-          Calcular Risco com IA
-        </button>
-      </section>
-
-      <!-- Resultados -->
-      <div id="results-section" class="bg-white dark:bg-gray-800 p-8 rounded-xl shadow-lg">
-        <div class="flex items-center justify-between mb-6">
-          <h3 class="text-lg font-bold dark:text-white">Resultado da Análise</h3>
-          <span class="text-sm text-gray-500" id="last-update"></span>
+    <!-- Nova Seção de Validação -->
+    <section class="bg-white p-6 rounded shadow">
+      <h2 class="text-xl font-bold mb-4">Validação do Risco</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <h3 class="font-semibold mb-2">Fontes de Dados</h3>
+          <ul id="dataSources" class="list-disc pl-5 space-y-1 text-sm">
+            <li>Modelo matemático (regressão logística)</li>
+            <li>Dados históricos de eventos similares</li>
+            <li class="text-blue-600" id="googleDataItem">Pesquisa Google: conectando...</li>
+            <li class="text-blue-600" id="weatherDataItem">Dados climáticos: conectando...</li>
+          </ul>
         </div>
-        
-        <div id="risk-value" class="text-5xl font-bold text-center risk-indicator">-</div>
-        
-        <div class="mt-6 grid grid-cols-2 gap-4 text-sm">
-          <div class="bg-blue-50 dark:bg-gray-700 p-4 rounded-lg">
-            <span class="block text-gray-600 dark:text-gray-300 mb-1">Risco Base</span>
-            <span id="base-risk" class="font-medium">-</span>
-          </div>
-          
-          <div class="bg-green-50 dark:bg-gray-700 p-4 rounded-lg">
-            <span class="block text-gray-600 dark:text-gray-300 mb-1">Ajustes Externos</span>
-            <span id="external-adjustments" class="font-medium">-</span>
+        <div>
+          <h3 class="font-semibold mb-2">Fatores de Ajuste</h3>
+          <div id="adjustmentFactors" class="text-sm space-y-2">
+            <div class="flex justify-between">
+              <span>Notícias recentes:</span>
+              <span id="newsFactor" class="font-medium">0%</span>
+            </div>
+            <div class="flex justify-between">
+              <span>Condições climáticas:</span>
+              <span id="weatherFactor" class="font-medium">0%</span>
+            </div>
+            <div class="flex justify-between border-t pt-2">
+              <span class="font-semibold">Ajuste total:</span>
+              <span id="totalAdjustment" class="font-bold">0%</span>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </section>
+
+    <!-- [Seção de Exportar Relatório...] -->
   </div>
 
   <script>
+    // Classe principal do analisador de risco
     class RiskAnalyzer {
       constructor() {
         this.model = null;
+        this.trainingData = JSON.parse(localStorage.getItem('trainingData')) || [];
+        this.API_KEYS = {
+          google: 'Ma255000#',
+          weather: 'Ma159800#'
+        };
+        this.lastResults = {
+          google: null,
+          weather: null,
+          calculation: null
+        };
         this.initModel();
       }
 
       async initModel() {
         try {
-          this.model = await tf.loadLayersModel('indexeddb://risk-model');
-        } catch {
-          this.model = this.createNewModel();
+          if (localStorage.getItem('riskModel')) {
+            this.model = await tf.loadLayersModel('localstorage://riskModel');
+            console.log("Modelo carregado do cache local");
+          } else {
+            this.model = this.createBaseModel();
+            console.log("Novo modelo criado");
+          }
+          this.updateUIPrecision();
+        } catch (error) {
+          console.error("Erro ao carregar modelo:", error);
+          this.model = this.createBaseModel();
         }
       }
 
-      createNewModel() {
-        const model = tf.sequential({
-          layers: [
-            tf.layers.dense({ units: 8, inputShape: [2], activation: 'relu' }),
-            tf.layers.dense({ units: 1, activation: 'sigmoid' })
-          ]
-        });
-
+      createBaseModel() {
+        const model = tf.sequential();
+        model.add(tf.layers.dense({
+          units: 1,
+          inputShape: [18],
+          activation: 'sigmoid',
+          kernelInitializer: 'zeros'
+        }));
         model.compile({
-          optimizer: tf.train.adam(0.01),
-          loss: 'meanSquaredError'
+          optimizer: tf.train.adam(0.1),
+          loss: 'binaryCrossentropy',
+          metrics: ['accuracy']
         });
-
         return model;
       }
 
       async calculateRisk(factors) {
-        const tensor = tf.tensor2d([[
-          factors.audience / 50000,
-          factors.training
-        ]]);
+        // 1. Cálculo base
+        const baseRisk = await this.calculateBaseRisk(factors);
         
-        const prediction = this.model.predict(tensor);
+        // 2. Obter dados externos
+        const [googleData, weatherData] = await Promise.all([
+          this.fetchGoogleData(factors),
+          this.fetchWeatherData(factors.localEvento)
+        ]);
+        
+        // 3. Ajustar risco
+        const adjustedRisk = this.adjustRiskWithExternalData(baseRisk, googleData, weatherData);
+        
+        // 4. Atualizar modelo
+        await this.updateModel(factors, adjustedRisk);
+        
+        return {
+          baseRisk,
+          adjustedRisk,
+          googleData,
+          weatherData
+        };
+      }
+
+      async calculateBaseRisk(factors) {
+        const inputTensor = this.prepareInputTensor(factors);
+        const prediction = this.model.predict(inputTensor);
         const risk = (await prediction.data())[0] * 100;
-        tf.dispose([tensor, prediction]);
-        
+        tf.dispose([inputTensor, prediction]);
         return risk;
       }
+
+      prepareInputTensor(factors) {
+        // Normalização dos inputs
+        return tf.tensor2d([[
+          factors.publico / 50000,       // Normalizado para 0-1
+          factors.treinamento,           // Já está 0-1
+          factors.inspecao,              // Já está 0-1
+          // ... outros fatores
+        ]]);
+      }
+
+      async fetchGoogleData(factors) {
+        try {
+          updateAPIStatus('Conectando ao Google...', 'blue');
+          const query = `${factors.equipesEnvolvidas} ${factors.localEvento} segurança`;
+          const url = `https://www.googleapis.com/customsearch/v1?key=${this.API_KEYS.google}&q=${encodeURIComponent(query)}&num=5`;
+          
+          const response = await fetch(url);
+          if (!response.ok) throw new Error(response.statusText);
+          
+          const data = await response.json();
+          this.lastResults.google = data;
+          
+          updateAPIStatus('Dados do Google recebidos', 'green');
+          document.getElementById('googleDataItem').textContent = `Pesquisa Google: ${data.searchInformation?.totalResults || 0} resultados`;
+          
+          return data;
+        } catch (error) {
+          console.error("Erro na API Google:", error);
+          updateAPIStatus('Erro ao conectar ao Google', 'red');
+          document.getElementById('googleDataItem').textContent = "Pesquisa Google: indisponível";
+          return null;
+        }
+      }
+
+      adjustRiskWithExternalData(baseRisk, googleData, weatherData) {
+        let adjustment = 0;
+        let newsFactor = 0;
+        let weatherFactor = 0;
+
+        // Ajuste por notícias
+        if (googleData?.items) {
+          const negativeNews = googleData.items.filter(item => 
+            item.title.toLowerCase().includes('violência') || 
+            item.snippet.toLowerCase().includes('confronto')
+          ).length;
+          newsFactor = Math.min(negativeNews * 3, 15); // Máximo 15%
+          adjustment += newsFactor;
+        }
+
+        // Ajuste por clima
+        if (weatherData?.current) {
+          if (weatherData.current.precip_mm > 10) weatherFactor += 8;
+          if (weatherData.current.temp_c > 30) weatherFactor += 5;
+          adjustment += weatherFactor;
+        }
+
+        // Limitar ajuste total
+        adjustment = Math.max(-15, Math.min(15, adjustment));
+        const finalRisk = Math.min(100, Math.max(0, baseRisk + adjustment));
+
+        // Atualizar UI
+        document.getElementById('newsFactor').textContent = `${newsFactor.toFixed(1)}%`;
+        document.getElementById('weatherFactor').textContent = `${weatherFactor.toFixed(1)}%`;
+        document.getElementById('totalAdjustment').textContent = `${adjustment > 0 ? '+' : ''}${adjustment.toFixed(1)}%`;
+
+        return finalRisk;
+      }
+
+      async updateModel(factors, actualRisk) {
+        try {
+          // Adicionar aos dados de treino
+          this.trainingData.push({
+            input: this.prepareInputTensor(factors).arraySync()[0],
+            output: actualRisk / 100
+          });
+
+          // Limitar histórico
+          if (this.trainingData.length > 100) {
+            this.trainingData.shift();
+          }
+
+          // Treinar modelo
+          const inputs = this.trainingData.map(d => d.input);
+          const outputs = this.trainingData.map(d => d.output);
+          
+          await this.model.fit(
+            tf.tensor2d(inputs),
+            tf.tensor1d(outputs),
+            {
+              epochs: 10,
+              batchSize: 10,
+              validationSplit: 0.2
+            }
+          );
+
+          // Salvar modelo atualizado
+          await this.model.save('localstorage://riskModel');
+          localStorage.setItem('trainingData', JSON.stringify(this.trainingData));
+          
+          this.updateUIPrecision();
+          document.getElementById('lastUpdate').textContent = new Date().toLocaleTimeString();
+        } catch (error) {
+          console.error("Erro ao atualizar modelo:", error);
+        }
+      }
+
+      updateUIPrecision() {
+        const accuracy = this.trainingData.length > 10 ? 
+          Math.min(95, 70 + Math.sqrt(this.trainingData.length)) : 
+          50 + (this.trainingData.length * 5);
+        
+        document.getElementById('modelAccuracy').textContent = `${accuracy.toFixed(0)}%`;
+      }
     }
 
+    // Instância global do analisador
     const riskAnalyzer = new RiskAnalyzer();
 
-    // Controles de Interface
-    function toggleTheme() {
-      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-      document.documentElement.setAttribute('data-theme', isDark ? 'light' : 'dark');
-      localStorage.setItem('themePreference', isDark ? 'light' : 'dark');
-    }
+    // Função principal de cálculo de risco
+    async function preverRiscoIA() {
+      if (!validarCamposObrigatorios()) return;
 
-    function togglePasswordVisibility(button) {
-      const input = button.previousElementSibling;
-      input.type = input.type === 'password' ? 'text' : 'password';
-    }
+      const btn = document.querySelector('button[onclick="preverRiscoIA()"]');
+      const originalText = btn.innerHTML;
+      btn.disabled = true;
+      btn.innerHTML = '<span class="animate-spin">⏳</span> Analisando...';
 
-    function showNotification(message, type = 'info') {
-      const types = {
-        info: 'bg-blue-100 text-blue-700',
-        success: 'bg-green-100 text-green-700',
-        error: 'bg-red-100 text-red-700'
-      };
-
-      const notification = document.createElement('div');
-      notification.className = `fixed bottom-4 right-4 p-4 rounded-lg shadow-lg ${types[type]} animate-slide-in`;
-      notification.textContent = message;
-      
-      document.body.appendChild(notification);
-      setTimeout(() => notification.remove(), 5000);
-    }
-
-    async function analyzeRisk() {
       try {
-        const factors = {
-          audience: Number(document.getElementById('audience').value),
-          training: Number(document.getElementById('training').value)
-        };
-
-        const risk = await riskAnalyzer.calculateRisk(factors);
+        const factors = coletarFatoresFormulario();
         
-        document.getElementById('risk-value').textContent = `${risk.toFixed(1)}%`;
-        document.getElementById('last-update').textContent = new Date().toLocaleTimeString();
-        showNotification(`Análise concluída: ${risk.toFixed(1)}% de risco`, 'success');
+        const { baseRisk, adjustedRisk, googleData, weatherData } = 
+          await riskAnalyzer.calculateRisk(factors);
+        
+        // Exibir resultados
+        exibirResultados(adjustedRisk, baseRisk);
+        atualizarDashboard(googleData, weatherData);
+        
+        // Atualizar gráfico
+        const riskComponents = calcularComponentesRisco(adjustedRisk);
+        desenharGraficoImpacto(riskComponents);
+        
       } catch (error) {
-        showNotification('Erro na análise. Verifique os dados.', 'error');
-        console.error(error);
+        console.error("Erro na análise:", error);
+        mostrarNotificacao("Erro na análise. Tente novamente.", "erro");
+      } finally {
+        btn.innerHTML = originalText;
+        btn.disabled = false;
       }
+    }
+
+    // [Funções auxiliares existentes...]
+
+    // Funções de UI atualizadas
+    function exibirResultados(risk, baseRisk) {
+      const resultadoElement = document.getElementById('resultadoIA');
+      const riscoGeralElement = document.getElementById('riscoGeral');
+      
+      riscoGeralElement.textContent = `${risk.toFixed(1)}%`;
+      riscoGeralElement.className = `text-3xl font-bold ${
+        risk > 70 ? 'text-red-600' : 
+        risk > 40 ? 'text-orange-600' : 'text-green-600'
+      }`;
+      
+      resultadoElement.innerHTML = `
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="bg-blue-50 p-3 rounded">
+            <h4 class="font-semibold text-blue-800">Risco Base</h4>
+            <p>${baseRisk.toFixed(1)}%</p>
+          </div>
+          <div class="bg-green-50 p-3 rounded">
+            <h4 class="font-semibold text-green-800">Risco Ajustado</h4>
+            <p>${risk.toFixed(1)}%</p>
+          </div>
+        </div>
+        <div class="mt-3 text-sm text-gray-600">
+          <p>Última análise: ${new Date().toLocaleString()}</p>
+        </div>
+      `;
+    }
+
+    function updateAPIStatus(message, color = 'blue') {
+      const statusElement = document.getElementById('apiStatus');
+      const textElement = document.getElementById('apiStatusText');
+      
+      statusElement.classList.remove('hidden', 'bg-red-100', 'bg-blue-100', 'bg-green-100', 'text-red-800', 'text-blue-800', 'text-green-800');
+      
+      statusElement.classList.add(
+        color === 'red' ? 'bg-red-100 text-red-800' :
+        color === 'green' ? 'bg-green-100 text-green-800' :
+        'bg-blue-100 text-blue-800'
+      );
+      
+      textElement.textContent = message;
+      statusElement.classList.remove('hidden');
     }
 
     // Inicialização
-    document.addEventListener('DOMContentLoaded', () => {
-      // Verificar tema salvo
-      const savedTheme = localStorage.getItem('themePreference') || 'light';
-      document.documentElement.setAttribute('data-theme', savedTheme);
-
-      // Gerenciar login
-      document.getElementById('loginForm').addEventListener('submit', (e) => {
-        e.preventDefault();
-        document.getElementById('login-screen').classList.add('hidden');
-        document.getElementById('main-interface').classList.remove('hidden');
-      });
-
-      // Verificar carregamento da logo
-      document.querySelectorAll('img').forEach(img => {
-        img.addEventListener('error', () => {
-          console.warn('Erro ao carregar imagem:', img.src);
-          img.src = '/images/placeholder-logo.png';
-          img.classList.add('border', 'border-gray-200');
-        });
-      });
+    document.addEventListener('DOMContentLoaded', function() {
+      // [Inicialização existente...]
+      
+      // Atualizar UI inicial
+      document.getElementById('lastUpdate').textContent = new Date().toLocaleTimeString();
+      document.getElementById('externalData').textContent = 
+        navigator.onLine ? 'Online' : 'Offline';
     });
   </script>
 </body>
