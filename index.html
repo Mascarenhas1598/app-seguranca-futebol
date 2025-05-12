@@ -1,79 +1,257 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-  <!-- ... (keep existing head content) ... -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>App Segurança em Eventos</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
 <body class="bg-gray-100 text-gray-800 font-sans">
 
   <!-- Tela de Login -->
   <div id="login" class="max-w-md mx-auto mt-20 bg-white p-8 rounded-xl shadow-md">
-    <img id="logoEmpresa" src="logo_nm_engenharia.jpg" alt="Logo NM Engenharia" 
-         class="mx-auto mb-6 w-40 aspect-square object-contain"> <!-- Added object containment -->
-    <!-- ... (rest of login form remains same) ... -->
+    <img id="logoEmpresa" src="logo_nm_engenharia.jpg" alt="Logo NM Engenharia" class="mx-auto mb-6 w-40 aspect-square object-contain">
+    <h2 class="text-2xl font-bold text-center mb-4">Acesso Restrito</h2>
+    <input id="usuario" type="text" placeholder="Usuário" class="w-full p-2 border border-gray-300 rounded mb-4">
+    <input id="senha" type="password" placeholder="Senha" class="w-full p-2 border border-gray-300 rounded mb-4">
+    <button onclick="realizarLogin()" class="w-full bg-blue-600 text-white p-2 rounded">Entrar</button>
   </div>
 
   <!-- Aplicativo -->
   <div id="app" class="hidden max-w-6xl mx-auto p-6 space-y-10">
-    <!-- ... (existing sections remain same) ... -->
+    <h1 class="text-xl font-bold">Análise de Risco do Evento</h1>
+
+    <!-- Dados do Evento -->
+    <input id="nomeEvento" type="text" placeholder="Nome do Evento" class="w-full p-2 border border-gray-300 rounded mb-2">
+    <input id="localEvento" type="text" placeholder="Local do Evento" class="w-full p-2 border border-gray-300 rounded mb-2">
+
+    <!-- Fatores de Risco -->
+    <!-- Fatores de Risco -->
+<input id="fatorPublico" type="number" placeholder="Público Estimado" class="w-full p-2 border border-gray-300 rounded mb-2">
+<input id="fatorEfetivo" type="number" placeholder="Efetivo de Segurança" class="w-full p-2 border border-gray-300 rounded mb-2">
+<input id="fatorOcorrencias" type="number" placeholder="Ocorrências Anteriores" class="w-full p-2 border border-gray-300 rounded mb-2">
+<input id="clima" type="number" placeholder="Clima (0 a 1)" min="0" max="1" step="0.1" class="w-full p-2 border border-gray-300 rounded mb-2">
+
+<label for="perfilJogo">Perfil do Jogo:</label>
+<select id="perfilJogo" class="w-full p-2 border border-gray-300 rounded mb-2">
+  <option value="0.2">Comum</option>
+  <option value="0.5">Clássico</option>
+  <option value="0.8">Final</option>
+</select>
+
+<label for="horarioPartida">Horário da Partida:</label>
+<select id="horarioPartida" class="w-full p-2 border border-gray-300 rounded mb-2">
+  <option value="0.2">Dia</option>
+  <option value="0.6">Noite</option>
+</select>
+
+<label for="torcidaVisitante">Torcida Visitante Presente?</label>
+<select id="torcidaVisitante" class="w-full p-2 border border-gray-300 rounded mb-2">
+  <option value="0">Não</option>
+  <option value="0.5">Sim</option>
+</select>
+
+<label for="conflitosHistoricos">Índice de Conflitos Históricos (0 a 1):</label>
+<input id="conflitosHistoricos" type="number" step="0.1" min="0" max="1" class="w-full p-2 border border-gray-300 rounded mb-2">
+
+<label for="diaSemana">Dia da Semana:</label>
+<select id="diaSemana" class="w-full p-2 border border-gray-300 rounded mb-2">
+  <option value="0.2">Segunda a Quinta</option>
+  <option value="0.5">Sexta</option>
+  <option value="0.7">Sábado</option>
+  <option value="0.8">Domingo / Feriado</option>
+</select>
+
+<label for="bebidaAlcoolica">Venda de Bebida Alcoólica?</label>
+<select id="bebidaAlcoolica" class="w-full p-2 border border-gray-300 rounded mb-2">
+  <option value="0">Não</option>
+  <option value="0.4">Sim</option>
+</select>
+
+<label for="monitoramento">Sistema de Monitoramento:</label>
+<select id="monitoramento" class="w-full p-2 border border-gray-300 rounded mb-2">
+  <option value="0">Completo</option>
+  <option value="0.5">Deficiente</option>
+</select>
+
+    <button onclick="preverRiscoIA()" class="bg-green-600 text-white p-2 rounded">Calcular Risco</button>
+    <p id="riscoResultado" class="text-lg font-semibold mt-4"></p>
+    <canvas id="graficoImpacto" class="w-full max-w-xl mx-auto"></canvas>
+
+    <!-- Registro de Ocorrência -->
+    <h2 class="text-lg font-semibold mt-6">Registro de Ocorrência</h2>
+    <textarea id="ocorrenciaTexto" placeholder="Descreva a ocorrência..." class="w-full p-2 border border-gray-300 rounded mb-4"></textarea>
+
+    <!-- Upload de Fotos por Fase -->
+<!-- Upload de Fotos por Fase -->
+<h2 class="text-lg font-semibold">Relatório Fotográfico</h2>
+<div class="space-y-4">
+  <div>
+    <label>Fase Pré-Jogo:</label>
+    <input id="fotosPre" type="file" accept="image/*" multiple class="block mt-1">
+  </div>
+  <div>
+    <label>Fase Durante o Jogo:</label>
+    <input id="fotosDurante" type="file" accept="image/*" multiple class="block mt-1">
+  </div>
+  <div>
+    <label>Fase Pós-Jogo:</label>
+    <input id="fotosPos" type="file" accept="image/*" multiple class="block mt-1">
+  </div>
+</div>
+
+    <button onclick="exportPDF()" class="bg-gray-800 text-white p-2 mt-6 rounded">Exportar PDF</button>
   </div>
 
   <script>
-    // Login handling remains same
+    let currentChart = null;
 
-    // Photo Gallery Improvements
-    let currentChart = null; // To track chart instance
+    function realizarLogin() {
+      const usuario = document.getElementById('usuario').value;
+      const senha = document.getElementById('senha').value;
+      if (usuario === 'admin' && senha === '1234') {
+        document.getElementById('login').classList.add('hidden');
+        document.getElementById('app').classList.remove('hidden');
+      } else {
+        alert('Usuário ou senha incorretos');
+      }
+    }
 
-    // Modified risk calculation with validation
     function preverRiscoIA() {
-      const publico = parseFloat(document.getElementById('fatorPublico').value) || 0;
-      const efetivo = parseFloat(document.getElementById('fatorEfetivo').value) || 0;
-      const ocorrencias = parseFloat(document.getElementById('fatorOcorrencias').value) || 0;
-      const clima = Math.min(Math.max(parseFloat(document.getElementById('clima').value) || 0, 0), 1);
+      const publico = parseFloat(document.getElementById('fatorPublico')?.value) || 0;
+      const efetivo = parseFloat(document.getElementById('fatorEfetivo')?.value) || 0;
+      const ocorrencias = parseFloat(document.getElementById('fatorOcorrencias')?.value) || 0;
+      const clima = Math.min(Math.max(parseFloat(document.getElementById('clima')?.value) || 0, 0), 1);
+      const perfilJogo = parseFloat(document.getElementById('perfilJogo')?.value) || 0;
+      const horarioPartida = parseFloat(document.getElementById('horarioPartida')?.value) || 0;
+      const torcidaVisitante = parseFloat(document.getElementById('torcidaVisitante')?.value) || 0;
+      const conflitosHistoricos = parseFloat(document.getElementById('conflitosHistoricos')?.value) || 0;
+      const diaSemana = parseFloat(document.getElementById('diaSemana')?.value) || 0;
+      const bebidaAlcoolica = parseFloat(document.getElementById('bebidaAlcoolica')?.value) || 0;
+      const monitoramento = parseFloat(document.getElementById('monitoramento')?.value) || 0;
 
-      // Prevent division by zero
       const publicoSafe = publico > 0 ? publico : 1;
+
       const risco = (
-        (publico / 10000) + 
-        ocorrencias + 
-        (1 - efetivo / (publicoSafe / 100)) + 
-        clima
-      ) / 4;
+        (publico / 10000) + ocorrencias + (1 - efetivo / (publicoSafe / 100)) + clima +
+        perfilJogo + horarioPartida + torcidaVisitante + conflitosHistoricos +
+        diaSemana + bebidaAlcoolica + monitoramento
+      ) / 11;
 
-      // ... (existing risk display code)
+      document.getElementById('riscoResultado').innerText = `Risco Estimado: ${risco.toFixed(2)}`;
 
-      // Chart handling with instance management
       const ctx = document.getElementById('graficoImpacto').getContext('2d');
-      if(currentChart) currentChart.destroy();
-      currentChart = new Chart(ctx, {/*...*/});
+      if (currentChart) currentChart.destroy();
+      currentChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: ['Risco Estimado'],
+          datasets: [{
+            label: 'Nível de Risco',
+            data: [risco],
+            backgroundColor: ['rgba(255, 99, 132, 0.5)']
+          }]
+        },
+        options: {
+          responsive: true,
+          scales: { y: { min: 0, max: 1 } }
+        }
+      });
     }
 
-    // PDF Export with html2canvas
     async function exportPDF() {
-      const appContent = document.getElementById('app');
-      const canvas = await html2canvas(appContent);
-      const imgData = canvas.toDataURL('image/png');
-      
-      const pdf = new jspdf.jsPDF('p', 'mm', 'a4');
-      const imgProps = pdf.getImageProperties(imgData);
-      const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-      
-      pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
-      pdf.save('relatorio-seguranca.pdf');
+      const { jsPDF } = window.jspdf;
+      const pdf = new jsPDF();
+
+      const dataAtual = new Date().toLocaleDateString();
+      const nomeEvento = document.getElementById('nomeEvento')?.value || 'Evento não informado';
+      const localEvento = document.getElementById('localEvento')?.value || 'Local não informado';
+
+      pdf.setFillColor(240);
+      pdf.rect(0, 0, 210, 297, 'F');
+      pdf.setTextColor(0);
+      pdf.setFontSize(22);
+      pdf.text("Relatório de Segurança do Evento", 105, 60, { align: 'center' });
+      pdf.setFontSize(14);
+      pdf.text(`Evento: ${nomeEvento}`, 105, 75, { align: 'center' });
+      pdf.text(`Local: ${localEvento}`, 105, 85, { align: 'center' });
+      pdf.text(`Data: ${dataAtual}`, 105, 95, { align: 'center' });
+      pdf.setDrawColor(100);
+      pdf.line(20, 110, 190, 110);
+
+      const ocorrencia = document.getElementById('ocorrenciaTexto').value;
+      pdf.addPage();
+      pdf.setFontSize(12);
+      pdf.setTextColor(40);
+      pdf.text("Resumo da Análise de Risco", 10, 10);
+      pdf.text(document.getElementById('riscoResultado').innerText || "Risco não calculado.", 10, 20);
+      pdf.text("\nRegistro de Ocorrência:", 10, 35);
+      pdf.setFontSize(10);
+      pdf.text(ocorrencia || "Nenhuma ocorrência registrada.", 10, 45, { maxWidth: 190 });
+
+      const fases = [
+        { id: 'fotosPre', label: 'Pré-Jogo' },
+        { id: 'fotosDurante', label: 'Durante o Jogo' },
+        { id: 'fotosPos', label: 'Pós-Jogo' }
+      ];
+
+      for (const fase of fases) {
+        const input = document.getElementById(fase.id);
+        if (input?.files.length) {
+          for (let i = 0; i < input.files.length; i++) {
+            const file = input.files[i];
+            const img = await readFileAsImage(file);
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = img.width;
+            canvas.height = img.height;
+            ctx.drawImage(img, 0, 0);
+            const imgData = canvas.toDataURL('image/jpeg', 0.6);
+            pdf.addPage();
+
+            pdf.setFontSize(16);
+            pdf.setTextColor(40);
+            pdf.text("Relatório Fotográfico de Segurança", 10, 10);
+            pdf.setLineWidth(0.5);
+            pdf.setDrawColor(100);
+            pdf.line(10, 12, 200, 12);
+
+            const labelText = `${fase.label} - Foto ${i + 1}`;
+            const timestamp = new Date().toLocaleString();
+            pdf.setFontSize(10);
+            pdf.setTextColor(80);
+            pdf.text(labelText, 10, 18);
+            pdf.text(`Data/Hora: ${timestamp}`, 140, 18);
+
+            pdf.addImage(imgData, 'JPEG', 10, 22, 180, 120);
+
+            const pageCount = pdf.internal.getNumberOfPages();
+            pdf.setTextColor(150);
+            pdf.text(`Página ${pageCount}`, 100, 290, { align: 'center' });
+          }
+        }
+      }
+
+      pdf.save('relatorio-completo.pdf');
     }
 
-    // Input validation for clima
-    document.getElementById('clima').addEventListener('input', function(e) {
-      let value = parseFloat(e.target.value);
-      if (isNaN(value)) value = 0;
-      e.target.value = Math.min(Math.max(value, 0), 1);
-    });
-
-    // Initialize with event listeners
-    document.addEventListener('DOMContentLoaded', () => {
-      document.querySelector('[onclick="window.print()"]')
-              .addEventListener('click', exportPDF);
-    });
+    function readFileAsImage(file) {
+      return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          const img = new Image();
+          img.onload = function () {
+            resolve(img);
+          };
+          img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+      });
+    }
   </script>
+
 </body>
 </html>
