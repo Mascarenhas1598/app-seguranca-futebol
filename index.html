@@ -6,6 +6,8 @@
   <title>App Segurança em Eventos</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
 <body class="bg-gray-100 text-gray-800 font-sans">
 
@@ -22,127 +24,18 @@
 
   <!-- Aplicativo -->
   <div id="app" class="hidden max-w-6xl mx-auto p-6 space-y-10">
-    <!-- Seu conteúdo completo já inserido acima -->
-    <!-- ... (mantido sem alterações) ... -->
-  </div>
 
-  <!-- Script -->
-  <script>
-    // Lógica de autenticação simples
-    document.getElementById("entrar").addEventListener("click", function () {
-      const usuario = document.getElementById("usuario").value;
-      const senha = document.getElementById("senha").value;
-
-      if (usuario === "admin" && senha === "123") {
-        document.getElementById("login").style.display = "none";
-        document.getElementById("app").classList.remove("hidden");
-      } else {
-        alert("Usuário ou senha inválidos.");
-      }
-    });
-
-    <!-- Ajuda Geral -->
-    <section class="bg-yellow-100 border-l-4 border-yellow-500 p-4 rounded">
-      <h2 class="text-lg font-bold mb-2 text-yellow-800">Ajuda Geral</h2>
-      <ul class="list-disc list-inside text-sm text-yellow-700">
-        <li>Preencha os campos obrigatórios de forma clara e objetiva.</li>
-        <li>Utilize os valores entre 0 e 1 nas análises conforme a legenda apresentada.</li>
-        <li>Faça o upload de fotos com descrição detalhada em cada fase do evento.</li>
-        <li>Registre apenas ocorrências reais, com dados verificados.</li>
-        <li>Use a previsão de risco com IA como suporte à tomada de decisão.</li>
-        <li>Ao final, utilize a função de exportar para gerar seu relatório em PDF.</li>
-      </ul>
-    </section>
-
-    <!-- Cadastro de Partida -->
-<section class="bg-white p-6 rounded shadow">
-  <h2 class="text-xl font-bold mb-4">Cadastro da Partida</h2>
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-    <div>
-      <label class="block font-semibold">Data</label>
-      <input type="date" class="w-full p-2 border rounded">
-    </div>
-    <div>
-      <label class="block font-semibold">Horário</label>
-      <input type="time" class="w-full p-2 border rounded">
-    </div>
-    <div class="md:col-span-2">
-      <label class="block font-semibold">Equipes Envolvidas</label>
-      <input type="text" id="equipesEnvolvidas" class="w-full p-2 border rounded">
-    </div>
-    <div>
-  <label class="block font-semibold">Local de Interesse</label>
-      <input type="text" class="w-full p-2 border rounded">
-    </div>
-    <div>
-      <label class="block font-semibold">Capacidade Habilitada do Local</label>
-  <input type="number" class="w-full p-2 border rounded">
-</div>
-  </div>
-</section>
-
-<!-- Análise de Risco -->
-<section class="bg-white p-6 rounded shadow">
-  <div class="mb-4 p-4 bg-blue-50 border-l-4 border-blue-400 text-sm text-blue-700">
-    <p><strong>Legenda dos Campos "0 a 1":</strong></p>
-    <ul class="list-disc list-inside">
-      <li><strong>0</strong> = Condição ideal ou risco nulo</li>
-      <li><strong>0.5</strong> = Situação intermediária ou risco moderado</li>
-      <li><strong>1</strong> = Condição crítica ou alto risco</li>
-    </ul>
-  </div>
-  <h2 class="text-xl font-bold mb-4">Análise de Risco</h2>
-<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-  <div>
-    <label class="block font-semibold">Expectativa de Público</label>
-    <input type="number" id="fatorPublico" class="w-full p-2 border rounded" placeholder="Ex: 10000">
-  </div>
-    <div>
-      <label class="block font-semibold">Nível de Treinamento da Equipe de Segurança</label>
-      <input type="number" id="treinamentoSeguranca" class="w-full p-2 border rounded" placeholder="0 a 1">
-    </div>
-    <div>
-      <label class="block font-semibold">Tempo de Inspeção Prévia do Estádio</label>
-      <input type="number" id="tempoInspecao" class="w-full p-2 border rounded" placeholder="0 a 1">
-    </div>
-    <div>
-      <label class="block font-semibold">Eficiência dos Checkpoints</label>
-      <input type="number" id="eficienciaCheckpoints" class="w-full p-2 border rounded" placeholder="0 a 1">
-    </div>
-    <div>
-      <label class="block font-semibold">Condição das Vias de Acesso</label>
-      <input type="number" id="condicaoVias" class="w-full p-2 border rounded" placeholder="0 a 1">
-    </div>
-    <div>
-      <label class="block font-semibold">Iluminação Pública no Entorno</label>
-      <input type="number" id="iluminacaoPublica" class="w-full p-2 border rounded" placeholder="0 a 1">
-    </div>
-    <div>
-      <label class="block font-semibold">Distância até Apoio Policial</label>
-      <input type="number" id="distanciaApoioPolicial" class="w-full p-2 border rounded" placeholder="0 a 1">
-    </div>
-    <div>
-      <label class="block font-semibold">Dia da Semana (0=Segunda, 1=Domingo ou feriado)</label>
-      <input type="number" id="diaSemana" class="w-full p-2 border rounded" placeholder="0 a 1">
-    </div>
-    <div>
-      <label class="block font-semibold">Histórico Emocional do Confronto</label>
-      <input type="number" id="historicoEmocional" class="w-full p-2 border rounded" placeholder="0 a 1">
-    </div>
-    <div>
-      <label class="block font-semibold">Monitoramento de Grupos Organizados</label>
-      <input type="number" id="monitoramentoGrupos" class="w-full p-2 border rounded" placeholder="0 a 1">
-    </div>
-    <div>
-      <label class="block font-semibold">Mandados de Prisão Pendentes</label>
-      <input type="number" id="mandadosPendentes" class="w-full p-2 border rounded" placeholder="0 a 1">
-    </div>
-  </div>
-      
+    <!-- Seção Análise de Risco -->
+    <section class="bg-white p-6 rounded shadow">
+      <h2 class="text-xl font-bold mb-4">Análise de Risco</h2>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
+          <label class="block font-semibold">Expectativa de Público</label>
+          <input type="number" id="fatorPublico" class="w-full p-2 border rounded" placeholder="Ex: 10000">
+        </div>
+        <div>
           <label class="block font-semibold">Efetivo Empregado (1 segurança a cada 100 pessoas)</label>
-<input type="number" id="fatorEfetivo" class="w-full p-2 border rounded" placeholder="Ex: 50">
+          <input type="number" id="fatorEfetivo" class="w-full p-2 border rounded" placeholder="Ex: 50">
         </div>
         <div>
           <label class="block font-semibold">Número de Ocorrências</label>
@@ -152,57 +45,38 @@
           <label class="block font-semibold">Clima</label>
           <input type="number" id="clima" class="w-full p-2 border rounded" placeholder="0 a 1">
         </div>
-        <div>
-          <label class="block font-semibold">Rivalidade</label>
-          <input type="number" id="rivalidade" class="w-full p-2 border rounded" placeholder="0 a 1">
-        </div>
-        <div>
-          <label class="block font-semibold">Torcida Visitante</label>
-          <input type="number" id="visitante" class="w-full p-2 border rounded" placeholder="0 a 1">
-        </div>
-        <div>
-          <label class="block font-semibold">Infraestrutura</label>
-          <input type="number" id="infraestrutura" class="w-full p-2 border rounded" placeholder="0 a 1">
-        </div>
-        <div>
-          <label class="block font-semibold">Evacuação</label>
-          <input type="number" id="evacuacao" class="w-full p-2 border rounded" placeholder="0 a 1">
-        </div>
       </div>
       <button onclick="preverRiscoIA()" class="mt-6 bg-green-600 text-white py-2 px-4 rounded hover:bg-green-700">Prever Risco com IA</button>
       <p id="resultadoIA" class="mt-4 font-bold"></p>
+      <canvas id="graficoImpacto" height="120"></canvas>
+    </section>
+
+    <!-- Seção Relatório Fotográfico (já existente) -->
     <section class="bg-white p-6 rounded shadow">
-  <h2 class="text-xl font-bold mb-4">Impacto Visual do Risco</h2>
-  <canvas id="graficoImpacto" height="120"></canvas>
-</section>
-<section class="bg-white p-6 rounded shadow">
-  <h2 class="text-xl font-bold mb-4">Relatório Fotográfico</h2>
-  <div class="mb-4 p-4 bg-green-50 border-l-4 border-green-400 text-sm text-green-700">
-    <p><strong>Instruções:</strong> envie até 5 fotos por fase do evento (Montagem, Entrada, Jogo, Evacuação, Fechamento). Cada imagem deve ter uma descrição clara do que está sendo registrado.</p>
-  </div>
-  <div class="space-y-4">
-    <label class="block font-semibold">Fase do Evento</label>
-    <select class="w-full p-2 border rounded">
-      <option value="Montagem">Montagem</option>
-      <option value="Entrada">Entrada</option>
-      <option value="Jogo">Jogo</option>
-      <option value="Evacuação">Evacuação</option>
-      <option value="Fechamento">Fechamento</option>
-    </select>
-        <label class="block font-semibold">Upload de Fotos (até 5 por fase)</label>
-        <input type="file" accept="image/*" multiple class="w-full p-2 border rounded">
-<div id="previewFotos" class="grid grid-cols-2 md:grid-cols-3 gap-4 mt-4"></div>
-        <label class="block font-semibold">Descrição da Foto</label>
-        <input type="text" maxlength="200" class="w-full p-2 border rounded">
+      <h2 class="text-xl font-bold mb-4">Relatório Fotográfico</h2>
+      <div class="mb-4 p-4 bg-green-50 border-l-4 border-green-400 text-sm text-green-700">
+        <p><strong>Instruções:</strong> envie até 5 fotos por fase do evento. Cada imagem pode conter uma descrição.</p>
       </div>
+
+      <label class="block font-semibold">Fase do Evento</label>
+      <select id="faseEvento" class="w-full p-2 border rounded mb-4">
+        <option value="Montagem">Montagem</option>
+        <option value="Entrada">Entrada</option>
+        <option value="Jogo">Jogo</option>
+        <option value="Evacuacao">Evacuação</option>
+        <option value="Fechamento">Fechamento</option>
+      </select>
+
+      <label class="block font-semibold">Upload de Fotos</label>
+      <input id="uploadFotos" type="file" accept="image/*" multiple class="w-full p-2 border rounded mb-4">
+      <small class="text-gray-500 block mb-4">Máximo 5 fotos por fase</small>
+
+      <div id="galeriaFotos" class="space-y-6"></div>
     </section>
 
     <!-- Registro de Ocorrências -->
     <section class="bg-white p-6 rounded shadow">
       <h2 class="text-xl font-bold mb-4">Registro de Ocorrências</h2>
-      <div class="mb-4 p-4 bg-yellow-50 border-l-4 border-yellow-400 text-sm text-yellow-700">
-        <p><strong>Orientação:</strong> descreva apenas ocorrências reais, com o máximo de detalhes possíveis (local, horário, tipo e consequências).</p>
-      </div>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <label class="block font-semibold">Tipo de Ocorrência</label>
@@ -230,163 +104,103 @@
     </section>
 
   </div>
-<script>
-document.getElementById("entrar").addEventListener("click", function () {
-  document.getElementById("login").style.display = "none";
-  document.getElementById("app").classList.remove("hidden");
-});
-function preverRiscoIA() {
-  const publico = parseFloat(document.getElementById('fatorPublico')?.value || 0);
-  const efetivo = parseFloat(document.getElementById('fatorEfetivo')?.value || 0);
-  const ocorrencias = parseFloat(document.getElementById('fatorOcorrencias')?.value || 0);
-  const clima = parseFloat(document.getElementById('clima')?.value || 0);
-  const rivalidade = parseFloat(document.getElementById('rivalidade')?.value || 0);
-  const visitante = parseFloat(document.getElementById('visitante')?.value || 0);
-  const infra = parseFloat(document.getElementById('infraestrutura')?.value || 0);
-  const evacuacao = parseFloat(document.getElementById('evacuacao')?.value || 0);
-  const tempoResposta = parseFloat(document.getElementById('tempoResposta')?.value || 0);
-  const capacidadeTransporte = parseFloat(document.getElementById('capacidadeTransporte')?.value || 0);
-  const coberturaCameras = parseFloat(document.getElementById('coberturaCameras')?.value || 0);
-  const planoContingencia = parseFloat(document.getElementById('planoContingencia')?.value || 0);
-  const equipes = document.getElementById('equipesEnvolvidas')?.value.toLowerCase() || "";
 
-  const pesos = {
-    publico: 0.4,
-    efetivo: -0.3,
-    ocorrencias: 0.25,
-    clima: 0.2,
-    rivalidade: 0.3,
-    visitante: 0.2,
-    infra: 0.2,
-    evacuacao: 0.2,
-    tempoResposta: 0.2,
-    capacidadeTransporte: 0.2,
-    coberturaCameras: 0.2,
-    planoContingencia: 0.2,
-    portoesAbertos: 0.2,
-    bebidaAlcoolica: 0.3,
-    tempoEvento: 0.2,
-    setoresMistos: 0.3,
-    conflitosHistoricos: 0.3,
-    alertaSeguranca: 0.4,
-    redesSociais: 0.3,
-    eventoConcomitante: 0.2,
-    distanciaTorcidas: 0.2,
-    rivalExtra: 0.5
-  };
+  <script>
+    document.getElementById("entrar").addEventListener("click", function () {
+      const usuario = document.getElementById("usuario").value;
+      const senha = document.getElementById("senha").value;
+      if (usuario === "admin" && senha === "123") {
+        document.getElementById("login").style.display = "none";
+        document.getElementById("app").classList.remove("hidden");
+      } else {
+        alert("Usuário ou senha inválidos.");
+      }
+    });
 
-  let riscoEstrutural = (
-    parseFloat(document.getElementById('infraestrutura')?.value || 0) +
-    parseFloat(document.getElementById('condicaoVias')?.value || 0) +
-    parseFloat(document.getElementById('iluminacaoPublica')?.value || 0) +
-    parseFloat(document.getElementById('distanciaApoioPolicial')?.value || 0)
-) / 4;
+    const galeriaFotos = document.getElementById("galeriaFotos");
+    const uploadFotos = document.getElementById("uploadFotos");
+    const faseEvento = document.getElementById("faseEvento");
+    const fotosPorFase = { Montagem: [], Entrada: [], Jogo: [], Evacuacao: [], Fechamento: [] };
 
-let publicoEstimado = parseFloat(document.getElementById('fatorPublico')?.value || 0);
-let efetivoEmpregado = parseFloat(document.getElementById('fatorEfetivo')?.value || 0);
-let razaoEfetivo = (publicoEstimado > 0) ? efetivoEmpregado / (publicoEstimado / 100) : 1;
-let riscoEfetivo = 1 - Math.min(razaoEfetivo, 1);
+    uploadFotos.addEventListener("change", function () {
+      const fase = faseEvento.value;
+      const files = [...this.files];
+      if (fotosPorFase[fase].length + files.length > 5) {
+        alert("Você só pode adicionar até 5 fotos por fase.");
+        return;
+      }
+      files.forEach(file => {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          const img = new Image();
+          img.src = e.target.result;
+          img.className = "w-full h-32 object-cover border rounded";
+          const descricao = document.createElement("input");
+          descricao.type = "text";
+          descricao.placeholder = "Descrição da foto";
+          descricao.className = "w-full p-1 border border-gray-300 rounded text-sm mt-1";
+          const container = document.createElement("div");
+          container.className = "mb-2";
+          container.appendChild(img);
+          container.appendChild(descricao);
+          fotosPorFase[fase].push(container);
+          renderGaleria();
+        };
+        reader.readAsDataURL(file);
+      });
+      this.value = "";
+    });
 
-let riscoOperacional = (
-  riscoEfetivo +
-    parseFloat(document.getElementById('evacuacao')?.value || 0) +
-    parseFloat(document.getElementById('tempoInspecao')?.value || 0) +
-    parseFloat(document.getElementById('eficienciaCheckpoints')?.value || 0) +
-    parseFloat(document.getElementById('clima')?.value || 0)
-) / 5;
-
-let riscoComportamental = (
-    parseFloat(document.getElementById('rivalidade')?.value || 0) +
-    parseFloat(document.getElementById('visitante')?.value || 0) +
-    parseFloat(document.getElementById('monitoramentoGrupos')?.value || 0) +
-    parseFloat(document.getElementById('historicoEmocional')?.value || 0) +
-    parseFloat(document.getElementById('mandadosPendentes')?.value || 0) +
-    parseFloat(document.getElementById('fatorOcorrencias')?.value || 0)
-) / 6;
-
-let riscoContextual = (
-    parseFloat(document.getElementById('diaSemana')?.value || 0) +
-    parseFloat(document.getElementById('tempoResposta')?.value || 0)
-) / 2;
-
-let riscoFinal = (0.3 * riscoEstrutural) + (0.3 * riscoOperacional) + (0.3 * riscoComportamental) + (0.1 * riscoContextual);
-
-  let total = riscoEstrutural + riscoOperacional + riscoComportamental + riscoContextual;
-  let impactoEstrutural = ((riscoEstrutural / total) * 100).toFixed(1);
-  let impactoOperacional = ((riscoOperacional / total) * 100).toFixed(1);
-  let impactoComportamental = ((riscoComportamental / total) * 100).toFixed(1);
-  let impactoContextual = ((riscoContextual / total) * 100).toFixed(1);
-const prob = 1 / (1 + Math.exp(-2 * (riscoFinal - 0.5)));
-  let resultado = "Baixo";
-  let cor = "#4CAF50";
-  if (prob >= 0.7) {
-    resultado = "Alto";
-    cor = "#F44336";
-  } else if (prob >= 0.4) {
-    resultado = "Moderado";
-    cor = "#FFC107";
-  }
-
-  const el = document.getElementById("resultadoIA");
-  el.innerText = `Previsão de Risco com IA: ${resultado} (Prob: ${(prob * 100).toFixed(1)}%)`;
-  el.style.color = "white";
-  el.style.backgroundColor = cor;
-  el.style.padding = "10px";
-  el.style.borderRadius = "6px";
-  el.innerHTML += `<br><small style='display:block; margin-top:10px;'>Impacto por categoria:<br>🔵 Estrutural: ${impactoEstrutural}%<br>🟢 Operacional: ${impactoOperacional}%<br>🟠 Comportamental: ${impactoComportamental}%<br>🔴 Contextual: ${impactoContextual}%</small>`;
-  
-  // Sugestões automáticas de mitigação
-  let sugestoes = [];
-  if (prob >= 0.7) {
-    sugestoes.push("✅ Reforçar efetivo policial e segurança privada");
-    sugestoes.push("✅ Implementar plano de evacuação de emergência reforçado");
-    sugestoes.push("✅ Intensificar revista pessoal e controle de acesso");
-  } else if (prob >= 0.4) {
-    sugestoes.push("🔍 Revisar os pontos de controle e checkpoints");
-    sugestoes.push("🔍 Aumentar o monitoramento de grupos organizados");
-  } else {
-    sugestoes.push("✔️ Manter planejamento padrão com monitoramento preventivo");
-  }
-  el.innerHTML += `<br><br><strong>Ações Mitigadoras Sugeridas:</strong><ul class='list-disc list-inside text-sm mt-2'>` + sugestoes.map(s => `<li>${s}</li>`).join('') + `</ul>`;
-
-  desenharGraficoImpacto(el, impactoEstrutural, impactoOperacional, impactoComportamental, impactoContextual);
-}
-
-function desenharGraficoImpacto(e, estrutural, operacional, comportamental, contextual) {
-  const ctx = document.getElementById('graficoImpacto')?.getContext('2d');
-  if (!ctx) return;
-  new Chart(ctx, {
-    type: 'bar',
-    data: {
-      labels: ['Estrutural', 'Operacional', 'Comportamental', 'Contextual'],
-      datasets: [{
-        label: 'Impacto (%)',
-        data: [estrutural, operacional, comportamental, contextual],
-        backgroundColor: ['#3B82F6', '#10B981', '#F59E0B', '#EF4444']
-      }]
-    },
-    options: {
-      responsive: true,
-      scales: { y: { beginAtZero: true, max: 100 } }
+    function renderGaleria() {
+      galeriaFotos.innerHTML = "";
+      for (const fase in fotosPorFase) {
+        if (fotosPorFase[fase].length > 0) {
+          const titulo = document.createElement("h3");
+          titulo.className = "text-lg font-semibold mt-4 mb-2";
+          titulo.textContent = `Fase: ${fase}`;
+          galeriaFotos.appendChild(titulo);
+          const grid = document.createElement("div");
+          grid.className = "grid grid-cols-2 md:grid-cols-3 gap-4";
+          fotosPorFase[fase].forEach(container => grid.appendChild(container));
+          galeriaFotos.appendChild(grid);
+        }
+      }
     }
-  });
-}
-const inputFotos = document.querySelector('input[type="file"]');
-const previewContainer = document.getElementById("previewFotos");
-inputFotos.addEventListener('change', function () {
-  previewContainer.innerHTML = '';
-  [...this.files].forEach(file => {
-    const reader = new FileReader();
-    reader.onload = function (e) {
-      const img = document.createElement('img');
-      img.src = e.target.result;
-      img.alt = file.name;
-      img.className = 'w-full h-32 object-cover border rounded shadow';
-      previewContainer.appendChild(img);
-    };
-    reader.readAsDataURL(file);
-  });
-});
-</script>
+
+    function preverRiscoIA() {
+      const publico = parseFloat(document.getElementById('fatorPublico')?.value || 0);
+      const efetivo = parseFloat(document.getElementById('fatorEfetivo')?.value || 0);
+      const ocorrencias = parseFloat(document.getElementById('fatorOcorrencias')?.value || 0);
+      const clima = parseFloat(document.getElementById('clima')?.value || 0);
+
+      const risco = (publico / 10000 + ocorrencias + (1 - efetivo / (publico / 100 || 1)) + clima) / 4;
+      let resultado = "Baixo";
+      let cor = "#4CAF50";
+      if (risco >= 0.7) { resultado = "Alto"; cor = "#F44336"; }
+      else if (risco >= 0.4) { resultado = "Moderado"; cor = "#FFC107"; }
+
+      const el = document.getElementById("resultadoIA");
+      el.innerText = `Previsão de Risco com IA: ${resultado} (Score: ${(risco * 100).toFixed(1)}%)`;
+      el.style.color = "white";
+      el.style.backgroundColor = cor;
+      el.style.padding = "10px";
+      el.style.borderRadius = "6px";
+
+      const ctx = document.getElementById('graficoImpacto').getContext('2d');
+      new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: ['Público', 'Efetivo', 'Ocorrências', 'Clima'],
+          datasets: [{
+            label: 'Fatores de Risco',
+            data: [publico / 10000, 1 - efetivo / (publico / 100 || 1), ocorrencias, clima],
+            backgroundColor: ['#3B82F6', '#10B981', '#F59E0B', '#EF4444']
+          }]
+        },
+        options: { responsive: true, scales: { y: { beginAtZero: true, max: 1 } } }
+      });
+    }
+  </script>
 </body>
 </html>
+
