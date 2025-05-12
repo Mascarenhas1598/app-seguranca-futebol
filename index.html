@@ -25,6 +25,43 @@
   <!-- Aplicativo -->
   <div id="app" class="hidden max-w-6xl mx-auto p-6 space-y-10">
 
+    <!-- Seção Cadastro da Partida -->
+    <section class="bg-white p-6 rounded shadow">
+      <h2 class="text-xl font-bold mb-4">Cadastro da Partida</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label class="block font-semibold">Time Mandante</label>
+          <input type="text" class="w-full p-2 border rounded" placeholder="Nome do time mandante">
+        </div>
+        <div>
+          <label class="block font-semibold">Time Visitante</label>
+          <input type="text" class="w-full p-2 border rounded" placeholder="Nome do time visitante">
+        </div>
+        <div>
+          <label class="block font-semibold">Data do Evento</label>
+          <input type="date" class="w-full p-2 border rounded">
+        </div>
+        <div>
+          <label class="block font-semibold">Horário</label>
+          <input type="time" class="w-full p-2 border rounded">
+        </div>
+        <div>
+          <label class="block font-semibold">Local/Estádio</label>
+          <input type="text" class="w-full p-2 border rounded" placeholder="Nome do estádio">
+        </div>
+        <div>
+          <label class="block font-semibold">Tipo de Evento</label>
+          <select class="w-full p-2 border rounded">
+            <option value="Amistoso">Amistoso</option>
+            <option value="Campeonato Estadual">Campeonato Estadual</option>
+            <option value="Campeonato Nacional">Campeonato Nacional</option>
+            <option value="Copa Internacional">Copa Internacional</option>
+          </select>
+        </div>
+      </div>
+      <button class="mt-4 bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700">Salvar Dados da Partida</button>
+    </section>
+
     <!-- Seção Análise de Risco -->
     <section class="bg-white p-6 rounded shadow">
       <h2 class="text-xl font-bold mb-4">Análise de Risco</h2>
@@ -51,7 +88,7 @@
       <canvas id="graficoImpacto" height="120"></canvas>
     </section>
 
-    <!-- Seção Relatório Fotográfico (já existente) -->
+    <!-- Seção Relatório Fotográfico -->
     <section class="bg-white p-6 rounded shadow">
       <h2 class="text-xl font-bold mb-4">Relatório Fotográfico</h2>
       <div class="mb-4 p-4 bg-green-50 border-l-4 border-green-400 text-sm text-green-700">
@@ -203,4 +240,3 @@
   </script>
 </body>
 </html>
-
